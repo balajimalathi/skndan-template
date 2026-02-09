@@ -14,13 +14,14 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.string().url(),
 
-    // Social providers (optional)
-    GITHUB_CLIENT_ID: z.string().min(1).optional(),
-    GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
-    GOOGLE_CLIENT_ID: z.string().min(1).optional(),
-    GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
-    TWITTER_CLIENT_ID: z.string().min(1).optional(),
-    TWITTER_CLIENT_SECRET: z.string().min(1).optional(),
+    // Google OAuth (required for sign-in)
+    GOOGLE_CLIENT_ID: z.string().min(1),
+    GOOGLE_CLIENT_SECRET: z.string().min(1),
+
+    // DodoPayments
+    DODO_PAYMENTS_API_KEY: z.string().min(1).optional(),
+    DODO_PAYMENTS_WEBHOOK_SECRET: z.string().min(1).optional(),
+    DODO_PAYMENTS_BASE_URL: z.string().url().optional(),
 
     // Email — Resend (optional)
     RESEND_API_KEY: z.string().min(1).optional(),
@@ -40,12 +41,11 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
-    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    TWITTER_CLIENT_ID: process.env.TWITTER_CLIENT_ID,
-    TWITTER_CLIENT_SECRET: process.env.TWITTER_CLIENT_SECRET,
+    DODO_PAYMENTS_API_KEY: process.env.DODO_PAYMENTS_API_KEY,
+    DODO_PAYMENTS_WEBHOOK_SECRET: process.env.DODO_PAYMENTS_WEBHOOK_SECRET,
+    DODO_PAYMENTS_BASE_URL: process.env.DODO_PAYMENTS_BASE_URL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,

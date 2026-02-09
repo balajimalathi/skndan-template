@@ -8,26 +8,12 @@ import { env } from "@/env";
 function buildSocialProviders() {
   const providers: Record<string, { clientId: string; clientSecret: string }> =
     {};
-
-  if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
-    providers.github = {
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
-    };
-  }
   if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
     providers.google = {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     };
   }
-  if (env.TWITTER_CLIENT_ID && env.TWITTER_CLIENT_SECRET) {
-    providers.twitter = {
-      clientId: env.TWITTER_CLIENT_ID,
-      clientSecret: env.TWITTER_CLIENT_SECRET,
-    };
-  }
-
   return providers;
 }
 
@@ -38,7 +24,7 @@ export const auth = betterAuth({
     provider: "pg",
   }),
   emailAndPassword: {
-    enabled: true,
+    enabled: false,
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {}),

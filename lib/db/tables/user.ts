@@ -17,4 +17,5 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  dodoCustomerId: text("dodo_customer_id"),
 });

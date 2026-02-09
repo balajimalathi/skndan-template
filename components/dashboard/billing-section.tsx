@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,16 +10,59 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IconCreditCard, IconDownload } from "@tabler/icons-react";
+import { getPlanById, type Plan } from "@/lib/billing/plans";
+import { toast } from "sonner";
 
-export default function BillingSection() {
+type SubscriptionProp = {
+  productId: string;
+  status: string;
+  currentPeriodEnd: string | null;
+} | null;
+
+type BillingSectionProps = {
+  subscription: SubscriptionProp;
+  plans: Plan[];
+};
+
+export default function BillingSection({ subscription, plans }: BillingSectionProps) {
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  const currentPlan = subscription
+    ? getPlanById(subscription.productId)
+    : getPlanById("plan_free");
+  const planName = currentPlan?.name ?? "Free";
+  const planPrice = currentPlan?.price ?? 0;
+  const planInterval = currentPlan?.interval ?? "month";
+  const isActive = subscription?.status === "active";
+
+  async function handleChangePlan(productId: string) {
+    setCheckoutLoading(productId);
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product_id: productId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error ?? "Failed to start checkout");
+        return;
+      }
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+        return;
+      }
+      toast.error("No checkout URL returned");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  }
+
   const invoices = [
     { id: "INV-001", date: "Apr 1, 2023", amount: "$49.00", status: "Paid" },
     { id: "INV-002", date: "Mar 1, 2023", amount: "$49.00", status: "Paid" },
-    { id: "INV-003", date: "Feb 1, 2023", amount: "$49.00", status: "Paid" },
-    { id: "INV-004", date: "Jan 1, 2023", amount: "$49.00", status: "Paid" },
   ];
 
   return (
@@ -50,12 +96,6 @@ export default function BillingSection() {
           >
             Invoices
           </TabsTrigger>
-          <TabsTrigger
-            value="usage"
-            className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-950"
-          >
-            Usage
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -67,11 +107,17 @@ export default function BillingSection() {
                     Current Plan
                   </CardTitle>
                   <CardDescription className="text-zinc-500 dark:text-zinc-400">
-                    You are currently on the Pro plan.
+                    You are currently on the {planName} plan.
                   </CardDescription>
                 </div>
-                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 hover:bg-green-100 dark:hover:bg-green-900">
-                  Active
+                <Badge
+                  className={
+                    isActive
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 hover:bg-green-100 dark:hover:bg-green-900"
+                      : "bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200"
+                  }
+                >
+                  {isActive ? "Active" : subscription?.status ?? "Free"}
                 </Badge>
               </div>
             </CardHeader>
@@ -79,86 +125,87 @@ export default function BillingSection() {
               <div className="flex items-end justify-between">
                 <div>
                   <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-                    $49
+                    ${planPrice}
                   </p>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    per month
+                    per {planInterval}
                   </p>
                 </div>
-                <Button className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200">
+                <Button
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                  onClick={() => {}}
+                  disabled
+                >
                   Change plan
                 </Button>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    Next billing date
-                  </p>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    May 1, 2023
-                  </p>
+              {subscription?.currentPeriodEnd && (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <p className="text-zinc-500 dark:text-zinc-400">
+                      Next billing date
+                    </p>
+                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
+                      {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    Billing cycle
-                  </p>
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    Monthly
-                  </p>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
           <Card className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-950">
             <CardHeader>
               <CardTitle className="text-zinc-900 dark:text-zinc-100">
-                Usage
+                Plans
               </CardTitle>
               <CardDescription className="text-zinc-500 dark:text-zinc-400">
-                Your current usage for this billing period.
+                Choose a plan. You will be redirected to checkout.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    API Requests
-                  </p>
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    12,543 / 50,000
-                  </p>
-                </div>
-                <Progress
-                  value={25}
-                  className="h-2 bg-zinc-100 dark:bg-zinc-800"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    Storage
-                  </p>
-                  <p className="text-zinc-500 dark:text-zinc-400">
-                    2.1 GB / 10 GB
-                  </p>
-                </div>
-                <Progress
-                  value={21}
-                  className="h-2 bg-zinc-100 dark:bg-zinc-800"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                    Team Members
-                  </p>
-                  <p className="text-zinc-500 dark:text-zinc-400">3 / 10</p>
-                </div>
-                <Progress
-                  value={30}
-                  className="h-2 bg-zinc-100 dark:bg-zinc-800"
-                />
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {plans.map((plan) => {
+                  const isCurrent = subscription?.productId === plan.id;
+                  const isFree = plan.id === "plan_free";
+                  return (
+                    <div
+                      key={plan.id}
+                      className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4"
+                    >
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">
+                        {plan.name}
+                      </p>
+                      <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+                        ${plan.price}
+                        <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400">
+                          /{plan.interval}
+                        </span>
+                      </p>
+                      {plan.features.length > 0 && (
+                        <ul className="mt-2 list-inside list-disc text-sm text-zinc-500 dark:text-zinc-400">
+                          {plan.features.slice(0, 3).map((f) => (
+                            <li key={f}>{f.replace(/_/g, " ")}</li>
+                          ))}
+                        </ul>
+                      )}
+                      <Button
+                        className="mt-4 w-full"
+                        variant={isCurrent ? "secondary" : "default"}
+                        disabled={isCurrent || isFree || !!checkoutLoading}
+                        onClick={() => !isFree && handleChangePlan(plan.id)}
+                      >
+                        {checkoutLoading === plan.id
+                          ? "Redirecting..."
+                          : isCurrent
+                            ? "Current plan"
+                            : isFree
+                              ? "Free"
+                              : "Subscribe"}
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -171,36 +218,20 @@ export default function BillingSection() {
                 Payment Methods
               </CardTitle>
               <CardDescription className="text-zinc-500 dark:text-zinc-400">
-                Manage your payment methods and billing preferences.
+                Manage your payment methods in the checkout or customer portal.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex h-10 w-14 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
-                      <IconCreditCard className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                        •••• •••• •••• 4242
-                      </p>
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                        Expires 04/2024
-                      </p>
-                    </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex h-10 w-14 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
+                    <IconCreditCard className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
                   </div>
-                  <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 hover:bg-blue-100 dark:hover:bg-blue-900">
-                    Default
-                  </Badge>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    Add or update payment methods when you subscribe or change plan.
+                  </p>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
-              >
-                Add payment method
-              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -223,116 +254,41 @@ export default function BillingSection() {
                   <div>Amount</div>
                   <div>Status</div>
                 </div>
-                {invoices.map((invoice) => (
-                  <div
-                    key={invoice.id}
-                    className="grid grid-cols-4 items-center py-3 px-4 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                  >
-                    <div className="font-medium text-zinc-900 dark:text-zinc-100">
-                      {invoice.id}
+                {invoices.length === 0 ? (
+                  <div className="py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                    No invoices yet.
+                  </div>
+                ) : (
+                  invoices.map((invoice) => (
+                    <div
+                      key={invoice.id}
+                      className="grid grid-cols-4 items-center py-3 px-4 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    >
+                      <div className="font-medium text-zinc-900 dark:text-zinc-100">
+                        {invoice.id}
+                      </div>
+                      <div className="text-zinc-500 dark:text-zinc-400">
+                        {invoice.date}
+                      </div>
+                      <div className="text-zinc-500 dark:text-zinc-400">
+                        {invoice.amount}
+                      </div>
+                      <div className="flex items-center">
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                          {invoice.status}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="ml-auto text-zinc-500 dark:text-zinc-400"
+                        >
+                          <IconDownload className="h-4 w-4" />
+                          <span className="sr-only">Download</span>
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-zinc-500 dark:text-zinc-400">
-                      {invoice.date}
-                    </div>
-                    <div className="text-zinc-500 dark:text-zinc-400">
-                      {invoice.amount}
-                    </div>
-                    <div className="flex items-center">
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 hover:bg-green-100 dark:hover:bg-green-900">
-                        {invoice.status}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="ml-auto text-zinc-500 dark:text-zinc-400"
-                      >
-                        <IconDownload className="h-4 w-4" />
-                        <span className="sr-only">Download</span>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="usage" className="space-y-6">
-          <Card className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-950">
-            <CardHeader>
-              <CardTitle className="text-zinc-900 dark:text-zinc-100">
-                Usage Details
-              </CardTitle>
-              <CardDescription className="text-zinc-500 dark:text-zinc-400">
-                Monitor your resource usage and limits.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                      API Requests
-                    </p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      25% used
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      12,543 / 50,000
-                    </p>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Resets on May 1, 2023
-                    </p>
-                  </div>
-                  <Progress
-                    value={25}
-                    className="h-2 bg-zinc-100 dark:bg-zinc-800"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                      Storage
-                    </p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      21% used
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      2.1 GB / 10 GB
-                    </p>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Included in plan
-                    </p>
-                  </div>
-                  <Progress
-                    value={21}
-                    className="h-2 bg-zinc-100 dark:bg-zinc-800"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                      Team Members
-                    </p>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      30% used
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <p className="text-zinc-500 dark:text-zinc-400">3 / 10</p>
-                    <p className="text-zinc-500 dark:text-zinc-400">
-                      Included in plan
-                    </p>
-                  </div>
-                  <Progress
-                    value={30}
-                    className="h-2 bg-zinc-100 dark:bg-zinc-800"
-                  />
-                </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>

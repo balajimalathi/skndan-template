@@ -1,1 +1,8 @@
-export { user, session, account, verification } from "./tables";
+export {
+  user,
+  session,
+  account,
+  verification,
+  subscription,
+  apiKey,
+} from "./tables";
