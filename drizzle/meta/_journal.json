@@ -8,6 +8,13 @@
       "when": 1744499552760,
       "tag": "0000_boring_blackheart",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770653429251,
+      "tag": "0001_nebulous_cobalt_man",
+      "breakpoints": true
     }
   ]
 }

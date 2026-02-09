@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

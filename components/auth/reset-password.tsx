@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircle, Terminal } from "lucide-react";
 import { toast } from "sonner";

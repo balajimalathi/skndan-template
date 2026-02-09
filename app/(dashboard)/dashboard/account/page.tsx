@@ -8,7 +8,7 @@ import { IconH1, IconLoader } from "@tabler/icons-react";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 
 import { useRouter } from "next/navigation";
 

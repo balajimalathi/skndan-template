@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"; // path to your Better Auth server instance
+import { auth } from "@/lib/auth/auth"; // path to your Better Auth server instance
 import { headers } from "next/headers";
 
 import Link from "next/link";

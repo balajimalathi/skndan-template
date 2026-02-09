@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { auth } from "@/lib/auth"; // path to your Better Auth server instance
+import { auth } from "@/lib/auth/auth"; // path to your Better Auth server instance
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 

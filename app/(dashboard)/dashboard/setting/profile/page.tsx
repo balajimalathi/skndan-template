@@ -1,5 +1,5 @@
 import { ProfileSection } from "@/components/dashboard/profile-section";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 
 export default async function ProfilePage() {
