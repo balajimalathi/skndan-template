@@ -103,5 +103,23 @@ export async function POST(request: Request) {
       },
     });
 
+  const [userRow] = await db
+    .select({ email: userTable.email, name: userTable.name })
+    .from(userTable)
+    .where(eq(userTable.id, userId))
+    .limit(1);
+  if (userRow?.email) {
+    const { runTriggers } = await import("@/lib/mail/run-triggers");
+    await runTriggers("subscription.created", {
+      to: userRow.email,
+      user: { email: userRow.email, name: userRow.name },
+      subscription: {
+        id: subscriptionId,
+        productId,
+        status: status ?? "unknown",
+      },
+    });
+  }
+
   return NextResponse.json({ received: true });
 }

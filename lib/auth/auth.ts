@@ -40,6 +40,15 @@ export const auth = betterAuth({
       },
     },
     user: {
+      create: {
+        after: async (user) => {
+          const { runTriggers } = await import("@/lib/mail/run-triggers");
+          await runTriggers("user.signed_up", {
+            to: user.email,
+            user: { id: user.id, name: user.name, email: user.email },
+          });
+        },
+      },
       update: {
         before: async (session) => {
           console.log("session update before", session, session);
