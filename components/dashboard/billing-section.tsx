@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IconCreditCard, IconDownload } from "@tabler/icons-react";
 import { getPlanById, type Plan } from "@/lib/billing/plans";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth/auth-client";
 
 type SubscriptionProp = {
   productId: string;
@@ -133,10 +134,23 @@ export default function BillingSection({ subscription, plans }: BillingSectionPr
                 </div>
                 <Button
                   className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
-                  onClick={() => {}}
+                  onClick={() => { }}
                   disabled
                 >
                   Change plan
+                </Button>
+                <Button
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                  onClick={async () => {
+                    const { data: customerPortal, error } =
+                      await authClient.dodopayments.customer.portal();
+                    if (customerPortal && customerPortal.redirect) {
+                      window.location.href = customerPortal.url;
+                    }
+                  }}
+                   
+                >
+                  Manage subscription
                 </Button>
               </div>
               {subscription?.currentPeriodEnd && (

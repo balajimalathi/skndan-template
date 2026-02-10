@@ -22,6 +22,7 @@ export const env = createEnv({
     DODO_PAYMENTS_API_KEY: z.string().min(1).optional(),
     DODO_PAYMENTS_WEBHOOK_SECRET: z.string().min(1).optional(),
     DODO_PAYMENTS_BASE_URL: z.string().url().optional(),
+    DODO_PAYMENTS_ENVIRONMENT: z.enum(["test_mode", "live_mode"]).optional(),
 
     // Email — Resend (optional)
     RESEND_API_KEY: z.string().min(1).optional(),
@@ -46,6 +47,7 @@ export const env = createEnv({
     DODO_PAYMENTS_API_KEY: process.env.DODO_PAYMENTS_API_KEY,
     DODO_PAYMENTS_WEBHOOK_SECRET: process.env.DODO_PAYMENTS_WEBHOOK_SECRET,
     DODO_PAYMENTS_BASE_URL: process.env.DODO_PAYMENTS_BASE_URL,
+    DODO_PAYMENTS_ENVIRONMENT: process.env.DODO_PAYMENTS_ENVIRONMENT,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
