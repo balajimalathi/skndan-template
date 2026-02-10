@@ -94,15 +94,16 @@ interface NavMainProps extends React.HTMLAttributes<HTMLDivElement> {
       icon?: React.ElementType;
     }[];
   }[];
+  groupLabel?: string;
 }
 
-export function NavMain({ className, items, ...props }: NavMainProps) {
+export function NavMain({ className, items, groupLabel = "Main", ...props }: NavMainProps) {
   const pathname = usePathname();
 
   return (
     <div className={cn("px-2", className)} {...props}>
       <SidebarGroup>
-        <SidebarGroupLabel>Main</SidebarGroupLabel>
+        <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             {items.map((item) => {

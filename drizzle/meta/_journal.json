@@ -22,6 +22,34 @@
       "when": 1770656469425,
       "tag": "0002_serious_whiplash",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770658115279,
+      "tag": "0003_email_trigger",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1770658214000,
+      "tag": "0004_analytics_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770658509774,
+      "tag": "0005_funnel",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770658838182,
+      "tag": "0006_dashboard_tables",
+      "breakpoints": true
     }
   ]
 }

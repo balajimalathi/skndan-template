@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   IconCamera,
   IconChartBar,
+  IconChartDots,
   IconCopy,
   IconDashboard,
   IconDatabase,
@@ -14,14 +15,16 @@ import {
   IconHome,
   IconInnerShadowTop,
   IconListDetails,
+  IconMail,
   IconMoneybag,
   IconMoneybagPlus,
   IconReport,
   IconSearch,
   IconSettings,
+  IconShieldLock,
+  IconShieldStar,
   IconUserCircle,
   IconUsers,
-  IconShieldLock,
   IconBell,
   IconDeviceDesktop,
   IconKey,
@@ -153,6 +156,21 @@ const data = {
       icon: IconMoneybag,
     },
   ],
+  navAdmin: [
+    {
+      title: "Admin",
+      url: "/dashboard/admin",
+      icon: IconShieldStar,
+      items: [
+        { title: "Users", url: "/dashboard/admin/users", icon: IconUsers },
+        { title: "Mail", url: "/dashboard/admin/mail", icon: IconMail },
+        { title: "Events", url: "/dashboard/admin/analytics/events", icon: IconChartBar },
+        { title: "Funnels", url: "/dashboard/admin/analytics/funnels", icon: IconChartDots },
+        { title: "Retention", url: "/dashboard/admin/analytics/retention", icon: IconChartDots },
+        { title: "Dashboards", url: "/dashboard/admin/analytics/dashboards", icon: IconChartBar },
+      ],
+    },
+  ],
   documents: [],
 };
 
@@ -183,7 +201,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavDocuments items={data.documents} /> */}
+        {user?.role === "admin" && (
+          <NavMain items={data.navAdmin} groupLabel="Admin" />
+        )}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
