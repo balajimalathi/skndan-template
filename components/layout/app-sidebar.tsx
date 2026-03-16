@@ -103,7 +103,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
     throw new Error("AppSidebar requires a user but received undefined.");
   }
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         {/* <TeamSwitcher teams={data.teams} /> */}
       </SidebarHeader>

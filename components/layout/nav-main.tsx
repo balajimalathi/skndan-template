@@ -62,8 +62,10 @@ export function NavMain({
                       isActive={isActive || pathname.startsWith(item.url)}
                     >
                       <item.icon className="size-4" />
-                      <span>{item.title}</span>
-                      <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                      <span className="group-data-[collapsible=icon]:hidden">
+                        {item.title}
+                      </span>
+                      <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180 group-data-[collapsible=icon]:hidden" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                 </SidebarMenuItem>
@@ -80,7 +82,9 @@ export function NavMain({
                           >
                             <a href={subItem.url}>
                               {Icon && <Icon className="size-4 mr-2" />}
-                              <span>{subItem.title}</span>
+                              <span className="group-data-[collapsible=icon]:hidden">
+                                {subItem.title}
+                              </span>
                             </a>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
@@ -100,7 +104,9 @@ export function NavMain({
               >
                 <a href={item.url}>
                   <item.icon className="size-4" />
-                  <span>{item.title}</span>
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    {item.title}
+                  </span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
