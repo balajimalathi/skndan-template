@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,11 @@ import { Switch } from "@/components/ui/switch";
 
 export function PreferencesSection() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -142,56 +148,58 @@ export function PreferencesSection() {
         </CardContent>
       </Card>
 
-      <Card className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-950">
-        <CardHeader>
-          <CardTitle className="text-zinc-900 dark:text-zinc-100">
-            Appearance
-          </CardTitle>
-          <CardDescription className="text-zinc-500 dark:text-zinc-400">
-            Customize how the interface looks.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup
-            value={theme}
-            onValueChange={setTheme}
-            className="space-y-3"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="light" id="light" />
-              <Label
-                htmlFor="light"
-                className="font-normal text-zinc-900 dark:text-zinc-100"
-              >
-                Light
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="dark" id="dark" />
-              <Label
-                htmlFor="dark"
-                className="font-normal text-zinc-900 dark:text-zinc-100"
-              >
-                Dark
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="system" id="system" />
-              <Label
-                htmlFor="system"
-                className="font-normal text-zinc-900 dark:text-zinc-100"
-              >
-                System
-              </Label>
-            </div>
-          </RadioGroup>
-        </CardContent>
-        <CardFooter className="flex justify-end border-t border-zinc-100 dark:border-zinc-800 px-6 py-4">
-          <Button className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200">
-            Save preferences
-          </Button>
-        </CardFooter>
-      </Card>
+      {mounted && (
+        <Card className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-950">
+          <CardHeader>
+            <CardTitle className="text-zinc-900 dark:text-zinc-100">
+              Appearance
+            </CardTitle>
+            <CardDescription className="text-zinc-500 dark:text-zinc-400">
+              Customize how the interface looks.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RadioGroup
+              value={theme}
+              onValueChange={setTheme}
+              className="space-y-3"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="light" id="light" />
+                <Label
+                  htmlFor="light"
+                  className="font-normal text-zinc-900 dark:text-zinc-100"
+                >
+                  Light
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="dark" id="dark" />
+                <Label
+                  htmlFor="dark"
+                  className="font-normal text-zinc-900 dark:text-zinc-100"
+                >
+                  Dark
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="system" id="system" />
+                <Label
+                  htmlFor="system"
+                  className="font-normal text-zinc-900 dark:text-zinc-100"
+                >
+                  System
+                </Label>
+              </div>
+            </RadioGroup>
+          </CardContent>
+          <CardFooter className="flex justify-end border-t border-zinc-100 dark:border-zinc-800 px-6 py-4">
+            <Button className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200">
+              Save preferences
+            </Button>
+          </CardFooter>
+        </Card>
+      )}
     </div>
   );
 }

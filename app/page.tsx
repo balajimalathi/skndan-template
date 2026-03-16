@@ -3,16 +3,16 @@ import { headers } from "next/headers";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Shield, ArrowRight, Layout, ArrowUpRight, LogOut } from "lucide-react";
 import LogoutButton from "@/components/auth/logout-button-icon";
-import HeroSection from "./_components/hero";
+import HeroSection from "@/components/landing/hero";
 export default async function page() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
   return (
-    <div className="flex relative min-h-screen flex-col">
+    <div className="flex relative min-h-screen flex-col bg-primary">
       <header className="relative z-20 border-b">
         <div className="container  flex h-16 items-center justify-between">
           <div className="flex items-center ">

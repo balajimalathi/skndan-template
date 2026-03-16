@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { User } from "@/lib/db/db";
-import LogoutButton from "./auth/logout-button";
+import LogoutButton from "@/components/auth/logout-button";
 import { ChevronsUpDown } from "lucide-react";
 
 export function NavUser({ user }: { user: Partial<User> }) {
@@ -102,3 +102,4 @@ export function NavUser({ user }: { user: Partial<User> }) {
     </SidebarMenu>
   );
 }
+

@@ -1,50 +1,29 @@
 "use client";
 import * as React from "react";
-import Link from "next/link";
 import {
-  IconCamera,
-  IconChartBar,
-  IconChartDots,
-  IconCopy,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconHome,
-  IconInnerShadowTop,
-  IconListDetails,
   IconMail,
-  IconMoneybag,
-  IconMoneybagPlus,
-  IconReport,
-  IconSearch,
   IconSettings,
   IconShieldLock,
   IconShieldStar,
   IconUserCircle,
   IconUsers,
-  IconBell,
   IconDeviceDesktop,
-  IconKey,
   IconCreditCard,
 } from "@tabler/icons-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/layout/nav-main";
+import { NavUser } from "@/components/layout/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { User } from "@/lib/db/db";
+import { NavProjects } from "@/components/layout/nav-projects";
+import { Frame, Map, PieChart } from "lucide-react";
 const data = {
   navMain: [
     {
@@ -85,12 +64,21 @@ const data = {
       ],
     },
   ],
-
-  navSecondary: [
+  projects: [
     {
-      title: "Upgrade to PRO",
-      url: "/",
-      icon: IconMoneybag,
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
     },
   ],
   navAdmin: [
@@ -115,32 +103,23 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
     throw new Error("AppSidebar requires a user but received undefined.");
   }
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              size="lg"
-            >
-              <Link href="/dashboard">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Dashboard</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {/* <TeamSwitcher teams={data.teams} /> */}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
         {user?.role === "admin" && (
           <NavMain items={data.navAdmin} groupLabel="Admin" />
         )}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
+
