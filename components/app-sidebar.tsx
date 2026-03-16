@@ -159,15 +159,11 @@ const data = {
   navAdmin: [
     {
       title: "Admin",
-      url: "/dashboard/admin",
+      url: "/admin",
       icon: IconShieldStar,
       items: [
-        { title: "Users", url: "/dashboard/admin/users", icon: IconUsers },
-        { title: "Mail", url: "/dashboard/admin/mail", icon: IconMail },
-        { title: "Events", url: "/dashboard/admin/analytics/events", icon: IconChartBar },
-        { title: "Funnels", url: "/dashboard/admin/analytics/funnels", icon: IconChartDots },
-        { title: "Retention", url: "/dashboard/admin/analytics/retention", icon: IconChartDots },
-        { title: "Dashboards", url: "/dashboard/admin/analytics/dashboards", icon: IconChartBar },
+        { title: "Users", url: "/admin/users", icon: IconUsers },
+        { title: "Mail", url: "/admin/mail", icon: IconMail },
       ],
     },
   ],

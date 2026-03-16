@@ -12,21 +12,15 @@ const sections = [
   {
     title: "Users",
     description: "Manage users, roles, and ban status.",
-    href: "/dashboard/admin/users",
+    href: "/admin/users",
     icon: IconUsers,
   },
   {
     title: "Mail",
     description: "Configure mail and event-triggered email rules.",
-    href: "/dashboard/admin/mail",
+    href: "/admin/mail",
     icon: IconMail,
-  },
-  {
-    title: "Analytics",
-    description: "Events, funnels, retention, and dashboards.",
-    href: "/dashboard/admin/analytics/events",
-    icon: IconChartBar,
-  },
+  }, 
 ];
 
 export default function AdminPage() {

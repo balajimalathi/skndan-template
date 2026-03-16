@@ -5,8 +5,5 @@ export { verification } from "./verification";
 export { subscription } from "./subscription";
 export { apiKey } from "./api-key";
 export { emailTrigger } from "./email-trigger";
-export { analyticsEvent } from "./analytics-event";
 export { userProperty } from "./user-property";
-export { funnel } from "./funnel";
 export { dashboard } from "./dashboard";
-export { dashboardWidget } from "./dashboard-widget";
