@@ -228,7 +228,7 @@ export default function HeroSection() {
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
-            <Link href={"/signup"}>
+            <Link href={"/login"}>
               <Button
                 variant="outline"
                 className="w-fit rounded-md dark:text-white text-black border-zinc-200/20 hover:bg-transparent dark:border-zinc-800 cursor-pointer dark:hover:bg-zinc-900 h-12 text-base"

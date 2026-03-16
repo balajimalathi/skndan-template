@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import Link from "next/link";
 import {
   IconCamera,
   IconChartBar,
@@ -31,7 +32,6 @@ import {
   IconCreditCard,
 } from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -54,13 +54,8 @@ const data = {
     },
     {
       title: "Account",
-      url: "/dashboard/profile",
+      url: "/dashboard/account",
       icon: IconUserCircle,
-    },
-    {
-      title: "Subscriptions",
-      url: "/dashboard/subscriptions",
-      icon: IconMoneybagPlus,
     },
     {
       title: "Setting",
@@ -78,19 +73,9 @@ const data = {
           icon: IconShieldLock,
         },
         {
-          title: "Notifications",
-          url: "/dashboard/setting/notifications",
-          icon: IconBell,
-        },
-        {
           title: "Appearance",
           url: "/dashboard/setting/preference",
           icon: IconDeviceDesktop,
-        },
-        {
-          title: "API Keys",
-          url: "/dashboard/setting/api-keys",
-          icon: IconKey,
         },
         {
           title: "Billing",
@@ -101,54 +86,6 @@ const data = {
     },
   ],
 
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
   navSecondary: [
     {
       title: "Upgrade to PRO",
@@ -167,7 +104,6 @@ const data = {
       ],
     },
   ],
-  documents: [],
 };
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -185,12 +121,12 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              size="lg"
             >
-              <a href="#">
+              <Link href="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Dashboard</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
