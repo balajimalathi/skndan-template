@@ -1,14 +1,11 @@
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { NavBreadcrumb } from "@/components/layout/nav-breadcrumb";
-
-import { SiteHeader } from "@/components/layout/site-header";
 import { Separator } from "@/components/ui/separator";
-
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-
-import { auth } from "@/lib/auth/auth"; // path to your Better Auth server instance
+import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getUserOrganization } from "@/lib/server/organization";
 
 export default async function layout({
   children,
@@ -18,8 +15,19 @@ export default async function layout({
   const session = await auth.api.getSession({
     headers: await headers(), // you need to pass the headers object.
   });
+
   if (!session?.user) {
     redirect("/login");
+  }
+
+  const hdrs = await headers();
+  const pathname = hdrs.get("x-pathname") ?? "";
+
+  if (!pathname.startsWith("/onboarding")) {
+    const organization = await getUserOrganization(session.user.id);
+    if (!organization) {
+      redirect("/onboarding");
+    }
   }
 
   return (

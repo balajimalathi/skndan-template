@@ -38,27 +38,32 @@ const data = {
     },
     {
       title: "Setting",
-      url: "/dashboard/setting",
+      url: "/dashboard/settings",
       icon: IconSettings,
       items: [
         {
           title: "Profile",
-          url: "/dashboard/setting/profile",
+          url: "/dashboard/settings/profile",
+          icon: IconUserCircle,
+        },
+        {
+          title: "Organization",
+          url: "/dashboard/settings/organization",
           icon: IconUserCircle,
         },
         {
           title: "Security",
-          url: "/dashboard/setting/security",
+          url: "/dashboard/settings/security",
           icon: IconShieldLock,
         },
         {
           title: "Appearance",
-          url: "/dashboard/setting/preference",
+          url: "/dashboard/settings/preference",
           icon: IconDeviceDesktop,
         },
         {
           title: "Billing",
-          url: "/dashboard/setting/billing",
+          url: "/dashboard/settings/billing",
           icon: IconCreditCard,
         },
       ],

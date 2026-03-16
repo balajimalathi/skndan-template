@@ -71,8 +71,8 @@ export async function POST(request: Request) {
     const { checkoutUrl } = await createCheckoutSession({
       customerId,
       productId,
-      successUrl: `${baseUrl}/dashboard/setting/billing?success=1`,
-      cancelUrl: `${baseUrl}/dashboard/setting/billing?cancel=1`,
+      successUrl: `${baseUrl}/dashboard/settings/billing?success=1`,
+      cancelUrl: `${baseUrl}/dashboard/settings/billing?cancel=1`,
       metadata: { userId: session.user.id },
     });
 

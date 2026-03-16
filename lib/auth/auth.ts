@@ -82,40 +82,6 @@ export const auth = betterAuth({
       },
     },
     user: {
-      create: {
-        after: async (user) => {
-          const existingMembership = await db.query.member.findFirst({
-            where: (m, { eq }) => eq(m.userId, user.id),
-          });
-          if (!existingMembership) {
-            const orgId = crypto.randomUUID();
-            const baseSlug =
-              user.email?.split("@")[0]?.toLowerCase().replace(/[^a-z0-9-]/g, "-") ??
-              `org-${orgId.slice(0, 8)}`;
-            await db.insert(organization).values({
-              id: orgId,
-              name: user.name ?? "My Organization",
-              slug: baseSlug,
-              logo: null,
-              primaryColor: null,
-              bookingHeadline: null,
-              timezone: "UTC",
-              currency: "INR",
-              minAdvanceHours: 1,
-              maxAdvanceDays: 30,
-              bufferMinutes: 15,
-              cancellationPolicyHours: 24,
-              createdAt: new Date(),
-            });
-            await db.insert(member).values({
-              id: crypto.randomUUID(),
-              userId: user.id,
-              organizationId: orgId,
-              role: "ADMIN",
-            });
-          }
-        },
-      },
       update: {
         before: async (session) => {
           console.log("session update before", session, session);
