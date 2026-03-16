@@ -32,8 +32,7 @@ export const AvailabilitySettingsSchema = z.object({
     .number()
     .int()
     .min(0, "Buffer must be at least 0 minutes")
-    .max(120, "Buffer cannot exceed 120 minutes")
-    .default(15),
+    .max(120, "Buffer cannot exceed 120 minutes"),
 });
 
 export type DayAvailabilityInput = z.infer<typeof DayAvailabilitySchema>;

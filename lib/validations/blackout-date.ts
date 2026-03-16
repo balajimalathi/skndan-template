@@ -19,27 +19,32 @@ export const BlackoutDateSchema = z.object({
 /**
  * Range selection for blackout dates.
  * Used when the UI allows selecting a span of dates in a single action.
+ *
+ * We use `superRefine` so we can validate `to` against `from`.
  */
-export const BlackoutDateRangeSchema = z.object({
-  from: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "From date must be in YYYY-MM-DD format"),
-  to: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "To date must be in YYYY-MM-DD format")
-    .refine(
-      (to, ctx) => {
-        const from = ctx.parent?.from as string | undefined;
-        if (!from) return true;
-        return new Date(to) >= new Date(from);
-      },
-      {
+export const BlackoutDateRangeSchema = z
+  .object({
+    from: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "From date must be in YYYY-MM-DD format"),
+    to: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "To date must be in YYYY-MM-DD format"),
+    staffId: z.string().nullable().optional(),
+    reason: z.string().max(256).optional(),
+  })
+  .superRefine((data, ctx) => {
+    const { from, to } = data;
+    if (!from || !to) return;
+
+    if (new Date(to) < new Date(from)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["to"],
         message: "End of range must be on or after start date",
-      },
-    ),
-  staffId: z.string().nullable().optional(),
-  reason: z.string().max(256).optional(),
-});
+      });
+    }
+  });
 
 export type BlackoutDateInput = z.infer<typeof BlackoutDateSchema>;
 

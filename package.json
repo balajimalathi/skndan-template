@@ -57,6 +57,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dodopayments": "^2.19.0",
     "drizzle-kit": "^0.30.6",
     "drizzle-orm": "^0.41.0",
@@ -83,10 +84,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
-    "@types/node": "^20.19.32",
+    "@types/node": "^25.5.0",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
     "dotenv": "^17.2.4",
+    "knip": "^5.87.0",
     "tailwindcss": "^4.1.18",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

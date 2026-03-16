@@ -10,6 +10,7 @@ import {
   IconUsers,
   IconDeviceDesktop,
   IconCreditCard,
+  IconCalendar,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/layout/nav-main";
@@ -24,6 +25,7 @@ import {
 import { User } from "@/lib/db/db";
 import { NavProjects } from "@/components/layout/nav-projects";
 import { Frame, Map, PieChart } from "lucide-react";
+import { title } from "process";
 const data = {
   navMain: [
     {
@@ -35,6 +37,16 @@ const data = {
       title: "Account",
       url: "/dashboard/account",
       icon: IconUserCircle,
+    },
+    {
+      title: "Availability",
+      url: "/dashboard/availability",
+      icon: IconUserCircle,
+    },
+    {
+      title: "Blackouts",
+      url: "/dashboard/blackouts",
+      icon: IconCalendar,
     },
     {
       title: "Setting",
