@@ -1,21 +1,9 @@
-import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive";
-import { DataTable } from "@/components/ui/data-table";
-import { SectionCards } from "@/components/dashboard/section-cards";
-import { headers } from "next/headers";
-import data from "../data.json";
-import { auth } from "@/lib/auth/auth";
-
 export default async function Page() {
-  const res = await auth.api.getSession({
-    headers: await headers(),
-  });
   return (
-    <>
-      <SectionCards />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
-      </div>
-      <DataTable data={data} />
-    </>
+    <div className="flex h-full items-center justify-center">
+      <p className="text-lg font-medium text-muted-foreground">
+        Dashboard coming in Day 5
+      </p>
+    </div>
   );
 }

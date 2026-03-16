@@ -5,50 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1744499552760,
-      "tag": "0000_boring_blackheart",
+      "when": 1773680198880,
+      "tag": "0000_oval_glorian",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1770653429251,
-      "tag": "0001_nebulous_cobalt_man",
+      "when": 1773680488367,
+      "tag": "0001_parched_wildside",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1770656469425,
-      "tag": "0002_serious_whiplash",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1770658115279,
-      "tag": "0003_email_trigger",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1770658214000,
-      "tag": "0004_analytics_tables",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1770658509774,
-      "tag": "0005_funnel",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1770658838182,
-      "tag": "0006_dashboard_tables",
+      "when": 1773680587781,
+      "tag": "0002_redundant_thunderbolts",
       "breakpoints": true
     }
   ]

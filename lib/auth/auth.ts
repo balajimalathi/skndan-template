@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin, createAuthMiddleware, organization } from "better-auth/plugins";
+import { admin, createAuthMiddleware, organization as organizationPlugin } from "better-auth/plugins";
 import { db } from "../db/db";
 import { env } from "@/env";
 import DodoPayments from "dodopayments";
@@ -12,6 +12,7 @@ import {
   webhooks,
   usage,
 } from "@dodopayments/better-auth";
+import { member, organization } from "@/lib/db/schema";
 
 export const dodoPayments = new DodoPayments({
   bearerToken: env.DODO_PAYMENTS_API_KEY!,
@@ -43,32 +44,34 @@ export const auth = betterAuth({
     before: createAuthMiddleware(async (ctx) => { }),
   },
   account: {},
-  plugins: [admin(), nextCookies(), organization({}),
-
-  dodopayments({
-    client: dodoPayments,
-    createCustomerOnSignUp: true,
-    use: [
-      checkout({
-        products: [
-          {
-            productId: "pdt_xxxxxxxxxxxxxxxxxxxxx",
-            slug: "premium-plan",
+  plugins: [
+    admin(),
+    nextCookies(),
+    organizationPlugin(),
+    dodopayments({
+      client: dodoPayments,
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: [
+            {
+              productId: "pdt_xxxxxxxxxxxxxxxxxxxxx",
+              slug: "premium-plan",
+            },
+          ],
+          successUrl: "/dashboard/success",
+          authenticatedUsersOnly: true,
+        }),
+        portal(),
+        webhooks({
+          webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_SECRET!,
+          onPayload: async (payload) => {
+            console.log("Received webhook:", payload.type);
           },
-        ],
-        successUrl: "/dashboard/success",
-        authenticatedUsersOnly: true,
-      }),
-      portal(),
-      webhooks({
-        webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_SECRET!,
-        onPayload: async (payload) => {
-          console.log("Received webhook:", payload.type);
-        },
-      }),
-      usage(),
-    ],
-  }),
+        }),
+        usage(),
+      ],
+    }),
   ],
   databaseHooks: {
     session: {
@@ -81,11 +84,36 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          const { runTriggers } = await import("@/lib/mail/run-triggers");
-          await runTriggers("user.signed_up", {
-            to: user.email,
-            user: { id: user.id, name: user.name, email: user.email },
+          const existingMembership = await db.query.member.findFirst({
+            where: (m, { eq }) => eq(m.userId, user.id),
           });
+          if (!existingMembership) {
+            const orgId = crypto.randomUUID();
+            const baseSlug =
+              user.email?.split("@")[0]?.toLowerCase().replace(/[^a-z0-9-]/g, "-") ??
+              `org-${orgId.slice(0, 8)}`;
+            await db.insert(organization).values({
+              id: orgId,
+              name: user.name ?? "My Organization",
+              slug: baseSlug,
+              logo: null,
+              primaryColor: null,
+              bookingHeadline: null,
+              timezone: "UTC",
+              currency: "INR",
+              minAdvanceHours: 1,
+              maxAdvanceDays: 30,
+              bufferMinutes: 15,
+              cancellationPolicyHours: 24,
+              createdAt: new Date(),
+            });
+            await db.insert(member).values({
+              id: crypto.randomUUID(),
+              userId: user.id,
+              organizationId: orgId,
+              role: "ADMIN",
+            });
+          }
         },
       },
       update: {

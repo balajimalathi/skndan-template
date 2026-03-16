@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
-import { Geist, Geist_Mono, Onest } from "next/font/google";
+import { Gabarito, Geist, Geist_Mono, Onest } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Onest({
+const geistSans = Gabarito({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
