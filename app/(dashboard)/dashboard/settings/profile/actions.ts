@@ -8,7 +8,6 @@ import { updateUserProfileForCurrentUser } from "@/lib/server/user-profile";
 const ProfileSettingsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Enter a valid email"),
-  timezone: z.string().optional().nullable(),
 });
 
 export type ProfileSettingsValues = z.infer<typeof ProfileSettingsSchema>;

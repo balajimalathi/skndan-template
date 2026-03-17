@@ -34,7 +34,7 @@ export function OnboardingStepper() {
   async function next() {
     let fields: (keyof OrganizationOnboardingInput)[] = [];
     if (step === 0) {
-      fields = ["name", "slug", "timezone", "currency"];
+      fields = ["name", "slug", "currency"];
     } else if (step === 1) {
       fields = ["minAdvanceHours", "maxAdvanceDays", "bufferMinutes", "cancellationPolicyHours"];
     }
@@ -108,20 +108,6 @@ export function OnboardingStepper() {
                   <FormLabel>URL slug</FormLabel>
                   <FormControl>
                     <Input placeholder="acme-inc" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="timezone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Timezone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="UTC" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -239,9 +225,6 @@ export function OnboardingStepper() {
               </div>
               <div>
                 <span className="font-medium">Slug:</span> {form.watch("slug")}
-              </div>
-              <div>
-                <span className="font-medium">Timezone:</span> {form.watch("timezone")}
               </div>
               <div>
                 <span className="font-medium">Currency:</span> {form.watch("currency")}

@@ -6,6 +6,13 @@ import { OrganizationOnboardingSchema, type OrganizationOnboardingInput } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { updateOrganization } from "@/components/onboarding/settings-actions";
 
@@ -35,7 +42,6 @@ export function OrganizationSettingsForm({ organization }: Props) {
       logo: organization.logo,
       primaryColor: organization.primaryColor ?? "",
       bookingHeadline: organization.bookingHeadline ?? "",
-      timezone: organization.timezone,
       currency: organization.currency,
       minAdvanceHours: organization.minAdvanceHours,
       maxAdvanceDays: organization.maxAdvanceDays,
@@ -88,27 +94,27 @@ export function OrganizationSettingsForm({ organization }: Props) {
 
           <FormField
             control={form.control}
-            name="timezone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Timezone</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="currency"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Currency</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="INR">INR · Indian Rupee</SelectItem>
+                    <SelectItem value="USD">USD · US Dollar</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  All service prices and booking amounts are shown to customers in this currency.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -129,6 +135,9 @@ export function OrganizationSettingsForm({ organization }: Props) {
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  Customers can only book slots at least this many hours before the start time.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -147,6 +156,9 @@ export function OrganizationSettingsForm({ organization }: Props) {
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  Customers can only book up to this many days in the future.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -165,6 +177,9 @@ export function OrganizationSettingsForm({ organization }: Props) {
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  A gap of this many minutes is kept between back-to-back appointments.
+                </p>
                 <FormMessage />
               </FormItem>
             )}
@@ -183,6 +198,10 @@ export function OrganizationSettingsForm({ organization }: Props) {
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
                 </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  Customers can cancel or reschedule only up to this many hours before the start
+                  time.
+                </p>
                 <FormMessage />
               </FormItem>
             )}

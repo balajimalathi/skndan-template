@@ -8,7 +8,6 @@ import { getUserOrganization } from "@/lib/server/organization";
 
 export type ProfileSettingsInput = {
   name: string;
-  timezone?: string | null;
   email: string;
 };
 
@@ -32,24 +31,6 @@ export async function updateUserProfileForCurrentUser(
     })
     .where(eq(userTable.id, currentUser.id));
 
-  if (data.timezone) {
-    await db
-      .insert(userPropertyTable)
-      .values({
-        userId: currentUser.id,
-        key: "timezone",
-        value: data.timezone,
-        updatedAt: now,
-      })
-      .onConflictDoUpdate({
-        target: [userPropertyTable.userId, userPropertyTable.key],
-        set: {
-          value: data.timezone,
-          updatedAt: now,
-        },
-      });
-  }
-
   return {
     ...currentUser,
     name: data.name,
@@ -58,17 +39,8 @@ export async function updateUserProfileForCurrentUser(
 }
 
 export async function getEffectiveUserTimezone(userId: string) {
-  const existing = await db.query.userProperty.findFirst({
-    where: (table, { eq, and }) =>
-      and(eq(table.userId, userId), eq(table.key, "timezone")),
-  });
-
-  if (existing && typeof existing.value === "string") {
-    return existing.value;
-  }
-
   const organization = await getUserOrganization(userId);
-  return organization?.timezone ?? null;
+  return organization?.timezone ?? "UTC";
 }
 
 

@@ -24,17 +24,13 @@ export type NavItemType = "brand" | "link" | "cta" | "muted" | "action";
 
 export interface NavMenuItem {
   label: string;
-  type: NavItemType;
   url?: string;
   icon?: React.ElementType;
   badge?: string;
-  gap?: boolean;
 }
 
 export interface NavMenuGroup {
   id: string;
-  title: string;
-  context: string;
   items: NavMenuItem[];
 }
 
@@ -47,58 +43,49 @@ export interface NavMenuGroup {
 export const NAV_MENUS: NavMenuGroup[] = [
   {
     id: "admin-sidebar",
-    title: "Admin sidebar nav (primary)",
-    context: "Primary nav — Dashboard, Calendar, Bookings, Customers, Services, Staff, Coupons",
     items: [
-      { label: "Dashboard", type: "link", url: "/dashboard", icon: LayoutIcon },
-      { label: "Calendar", type: "link", url: "/dashboard/calendar", icon: Calendar },
-      { label: "Bookings", type: "link", url: "/dashboard/bookings", icon: Calendar },
-      { label: "Customers", type: "link", url: "/dashboard/customers", icon: Users },
-      { label: "Services", type: "link", url: "/dashboard/services", icon: LayoutIcon },
-      { label: "Staff", type: "link", url: "/dashboard/staff", icon: Users, badge: "Pro+" },
-      { label: "Coupons", type: "link", url: "/dashboard/coupons", icon: Tag },
-      { label: "Settings", type: "link", url: "/dashboard/settings", icon: Settings },
+      { label: "Dashboard", url: "/dashboard", icon: LayoutIcon },
+      { label: "Calendar", url: "/dashboard/calendar", icon: Calendar },
+      { label: "Blackouts", url: "/dashboard/blackouts", icon: Calendar },
+      { label: "Bookings", url: "/dashboard/bookings", icon: Calendar },
+      { label: "Customers", url: "/dashboard/customers", icon: Users },
+      { label: "Services", url: "/dashboard/services", icon: LayoutIcon },
+      { label: "Staff", url: "/dashboard/staff", icon: Users, badge: "Pro+" },
+      { label: "Coupons", url: "/dashboard/coupons", icon: Tag },
+      { label: "Settings", url: "/dashboard/settings", icon: Settings },
     ],
   },
   {
     id: "admin-sidebar-schedule",
-    title: "Schedule section (top-level with divider)",
-    context: "Availability, Blackouts — below primary nav with section divider",
     items: [
-      { label: "Availability", type: "link", url: "/dashboard/availability", icon: UserCircle },
-      { label: "Blackouts", type: "link", url: "/dashboard/blackouts", icon: Calendar },
+      { label: "Availability", url: "/dashboard/availability", icon: UserCircle },
+      { label: "Blackouts", url: "/dashboard/blackouts", icon: Calendar },
     ],
   },
   {
     id: "staff-sidebar",
-    title: "Staff sidebar nav (restricted)",
-    context:
-      "Staff see only their own bookings — no customers, no settings",
     items: [
-      { label: "My calendar", type: "link", url: "/dashboard", icon: Calendar },
-      { label: "My bookings", type: "link", url: "/dashboard/bookings", icon: Calendar },
-      { label: "My schedule", type: "link", url: "/dashboard/schedule", icon: Calendar },
-      { label: "Account", type: "link", url: "/dashboard/account", icon: UserCircle, gap: true },
+      { label: "My calendar", url: "/dashboard", icon: Calendar },
+      { label: "My bookings", url: "/dashboard/bookings", icon: Calendar },
+      { label: "My schedule", url: "/dashboard/schedule", icon: Calendar },
+      { label: "Account", url: "/dashboard/account", icon: UserCircle },
     ],
   },
   {
     id: "settings-tabs",
-    title: "Settings sub-nav (tabs)",
-    context:
-      "Horizontal tabs inside /dashboard/settings on desktop, list on mobile",
     items: [
-      { label: "Profile", type: "link", url: "/dashboard/settings/profile", icon: UserCircle },
-      { label: "Organization", type: "link", url: "/dashboard/settings/organization", icon: UserCircle },
-      { label: "Availability", type: "link", url: "/dashboard/settings/availability", icon: UserCircle },
-      { label: "Notifications", type: "link", url: "/dashboard/settings/notifications", icon: Bell },
-      { label: "Payments", type: "link", url: "/dashboard/settings/payments", icon: Wallet },
-      { label: "Security", type: "link", url: "/dashboard/settings/security", icon: ShieldCheckIcon },
-      { label: "Appearance", type: "link", url: "/dashboard/settings/preference", icon: MonitorIcon },
-      { label: "Billing", type: "link", url: "/dashboard/settings/billing", icon: CreditCardIcon },
-      { label: "Widget", type: "link", url: "/dashboard/settings/widget", icon: Layout, badge: "Pro+" },
-      { label: "Branding", type: "link", url: "/dashboard/settings/branding", icon: Palette, badge: "Agency" },
-      { label: "Domain", type: "link", url: "/dashboard/settings/domain", icon: Globe, badge: "Agency" },
-      { label: "Team", type: "link", url: "/dashboard/settings/team", icon: Users },
+      { label: "Profile", url: "/dashboard/settings/profile", icon: UserCircle },
+      { label: "Organization", url: "/dashboard/settings/organization", icon: UserCircle },
+      { label: "Availability", url: "/dashboard/settings/availability", icon: UserCircle },
+      { label: "Notifications", url: "/dashboard/settings/notifications", icon: Bell },
+      { label: "Payments", url: "/dashboard/settings/payments", icon: Wallet },
+      { label: "Security", url: "/dashboard/settings/security", icon: ShieldCheckIcon },
+      { label: "Appearance", url: "/dashboard/settings/preference", icon: MonitorIcon },
+      { label: "Billing", url: "/dashboard/settings/billing", icon: CreditCardIcon },
+      { label: "Widget", url: "/dashboard/settings/widget", icon: Layout, badge: "Pro+" },
+      { label: "Branding", url: "/dashboard/settings/branding", icon: Palette, badge: "Agency" },
+      { label: "Domain", url: "/dashboard/settings/domain", icon: Globe, badge: "Agency" },
+      { label: "Team", url: "/dashboard/settings/team", icon: Users },
     ],
   }
 ];
@@ -114,7 +101,7 @@ export const sidebarNavMain: {
   icon: React.ElementType;
   items?: { title: string; url: string; icon?: React.ElementType }[];
 }[] = (NAV_MENUS.find((m) => m.id === "admin-sidebar")?.items ?? [])
-  .filter((item) => item.type === "link" && item.url)
+  .filter((item) => item.url)
   .map((item) => ({
     title: item.label,
     url: item.url as string,
@@ -137,7 +124,7 @@ export const sidebarNavSchedule: {
   url: string;
   icon: React.ElementType;
 }[] = (NAV_MENUS.find((m) => m.id === "admin-sidebar-schedule")?.items ?? [])
-  .filter((item) => item.type === "link" && item.url)
+  .filter((item) => item.url)
   .map((item) => ({
     title: item.label,
     url: item.url as string,
@@ -155,7 +142,7 @@ export const sidebarNavStaff: {
     icon?: React.ElementType;
   }[];
 }[] = (NAV_MENUS.find((m) => m.id === "staff-sidebar")?.items ?? [])
-  .filter((item) => item.type === "link" && item.url)
+  .filter((item) => item.url)
   .map((item) => ({
     title: item.label,
     url: item.url as string,

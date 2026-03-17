@@ -26,7 +26,6 @@ export type OrganizationOnboardingInput = {
   logo?: string | null;
   primaryColor?: string | null;
   bookingHeadline?: string | null;
-  timezone: string;
   currency: (typeof organization.$inferInsert)["currency"];
   minAdvanceHours: number;
   maxAdvanceDays: number;
@@ -45,7 +44,7 @@ export async function createOrganizationForUser(userId: string, data: Organizati
       logo: data.logo ?? null,
       primaryColor: data.primaryColor ?? null,
       bookingHeadline: data.bookingHeadline ?? null,
-      timezone: data.timezone,
+      timezone: "UTC",
       currency: data.currency,
       minAdvanceHours: data.minAdvanceHours,
       maxAdvanceDays: data.maxAdvanceDays,
@@ -80,7 +79,7 @@ export async function updateOrganizationForUser(userId: string, data: Organizati
       logo: data.logo ?? null,
       primaryColor: data.primaryColor ?? null,
       bookingHeadline: data.bookingHeadline ?? null,
-      timezone: data.timezone,
+      timezone: "UTC",
       currency: data.currency,
       minAdvanceHours: data.minAdvanceHours,
       maxAdvanceDays: data.maxAdvanceDays,

@@ -39,20 +39,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const TIMEZONE_OPTIONS = [
-  { value: "pst", label: "Pacific Standard Time (PST)" },
-  { value: "mst", label: "Mountain Standard Time (MST)" },
-  { value: "cst", label: "Central Standard Time (CST)" },
-  { value: "est", label: "Eastern Standard Time (EST)" },
-  { value: "gmt", label: "Greenwich Mean Time (GMT)" },
-];
-
 export function ProfileSection({
   session,
-  initialTimezone,
 }: {
   session: { user: User; session: Session };
-  initialTimezone?: string | null;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -61,13 +51,11 @@ export function ProfileSection({
       z.object({
         name: z.string().min(1, "Name is required"),
         email: z.string().email("Enter a valid email"),
-        timezone: z.string().optional().nullable(),
       }),
     ),
     defaultValues: {
       name: session.user.name ?? "",
       email: session.user.email ?? "",
-      timezone: initialTimezone ?? undefined,
     },
   });
 
@@ -178,37 +166,6 @@ export function ProfileSection({
                         className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="timezone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time zone</FormLabel>
-                    <Select
-                      value={field.value ?? undefined}
-                      onValueChange={field.onChange}
-                    >
-                      <FormControl>
-                        <SelectTrigger
-                          id="timezone"
-                          className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
-                        >
-                          <SelectValue placeholder="Select time zone" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {TIMEZONE_OPTIONS.map((tz) => (
-                          <SelectItem key={tz.value} value={tz.value}>
-                            {tz.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

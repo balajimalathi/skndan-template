@@ -25,10 +25,12 @@ import { addMinutes, format } from "date-fns";
  * 2. Load the staff's availability window for that day.
  * 3. Check if the day is blacked out at org or staff level.
  * 4. Load the service duration and organization buffer minutes.
- * 5. Generate candidate start times inside the working window spaced by (duration + buffer).
- * 6. Load existing non-cancelled bookings for the staff on that day.
- * 7. Filter out any candidate whose [start, start+duration) overlaps an existing booking.
- * 8. Return remaining candidate start times formatted as \"HH:MM\" in the org timezone.
+ * 5. Generate candidate start times inside the working window spaced by service duration.
+ * 6. Apply the organization's min/max advance booking window.
+ * 7. Load existing non-cancelled bookings for the staff on that day.
+ * 8. Filter out any candidate whose [start, start+duration) overlaps an existing booking
+ *    once the booking window has been expanded by the configured buffer before and after.
+ * 9. Return remaining candidate start times formatted as \"HH:MM\" in the org timezone.
  */
 export async function getAvailableSlots(params: {
   orgId: string;
@@ -109,14 +111,15 @@ export async function getAvailableSlots(params: {
 
   const durationMinutes = svc.duration;
   const bufferMinutes = org.bufferMinutes;
-  const stepMinutes = durationMinutes + bufferMinutes;
+  const stepMinutes = durationMinutes;
 
   // 5. Generate candidate slots inside working window.
   const candidateStartsUtc: Date[] = [];
   let cursor = new Date(availabilityStartUtc);
 
   // We allow the last slot to start such that its end time (start + duration) still
-  // fits inside the working window. The buffer is enforced as the step between starts.
+  // fits inside the working window. Buffers are enforced around existing bookings,
+  // not between arbitrary slots.
   while (addMinutes(cursor, durationMinutes) <= availabilityEndUtc) {
     candidateStartsUtc.push(new Date(cursor));
     cursor = addMinutes(cursor, stepMinutes);
@@ -126,7 +129,37 @@ export async function getAvailableSlots(params: {
     return [];
   }
 
-  // 6. Load existing non-cancelled bookings for this staff on the target day.
+  // Apply organization-level advance booking window rules.
+  if (org.minAdvanceHours != null || org.maxAdvanceDays != null) {
+    const nowUtc = new Date();
+    const nowLocal = tz.utcToZonedTime(nowUtc, timezone);
+
+    const earliestAllowedLocal =
+      org.minAdvanceHours != null ? addMinutes(nowLocal, org.minAdvanceHours * 60) : nowLocal;
+    const latestAllowedLocal =
+      org.maxAdvanceDays != null ? addMinutes(nowLocal, org.maxAdvanceDays * 24 * 60) : undefined;
+
+    const earliestAllowedUtc = tz.zonedTimeToUtc(earliestAllowedLocal, timezone);
+    const latestAllowedUtc =
+      latestAllowedLocal != null ? tz.zonedTimeToUtc(latestAllowedLocal, timezone) : undefined;
+
+    for (let i = candidateStartsUtc.length - 1; i >= 0; i--) {
+      const start = candidateStartsUtc[i];
+      if (start < earliestAllowedUtc) {
+        candidateStartsUtc.splice(i, 1);
+        continue;
+      }
+      if (latestAllowedUtc && start > latestAllowedUtc) {
+        candidateStartsUtc.splice(i, 1);
+      }
+    }
+
+    if (candidateStartsUtc.length === 0) {
+      return [];
+    }
+  }
+
+  // 7. Load existing non-cancelled bookings for this staff on the target day.
   const bookingRows = await db
     .select()
     .from(booking)
@@ -141,11 +174,12 @@ export async function getAvailableSlots(params: {
       ),
     );
 
-  // 7. Filter out overlapping slots.
+  // 8. Filter out overlapping slots, expanding each booking by the organization's buffer
+  // before and after.
   const isOverlapping = (slotStart: Date, slotEnd: Date) =>
     bookingRows.some((b) => {
-      const bookingStart = b.startTime;
-      const bookingEnd = b.endTime;
+      const bookingStart = addMinutes(b.startTime, -bufferMinutes);
+      const bookingEnd = addMinutes(b.endTime, bufferMinutes);
       // Intervals [slotStart, slotEnd) and [bookingStart, bookingEnd) overlap
       // iff each starts before the other ends.
       return slotStart < bookingEnd && slotEnd > bookingStart;
@@ -156,7 +190,7 @@ export async function getAvailableSlots(params: {
     return !isOverlapping(startUtc, endUtc);
   });
 
-  // 8. Convert remaining starts to \"HH:MM\" strings in org local time.
+  // 9. Convert remaining starts to \"HH:MM\" strings in org local time.
   const result = availableSlotsUtc.map((slotStartUtc) => {
     const local = tz.utcToZonedTime(slotStartUtc, timezone);
     return format(local, "HH:mm");

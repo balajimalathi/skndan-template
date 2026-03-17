@@ -11,7 +11,6 @@ import {
   type BlackoutDateRangeInput,
 } from "@/lib/validations/blackout-date";
 import { and, eq, gte } from "drizzle-orm";
-import tz from "date-fns-tz";
 
 async function getCurrentUserOrg() {
   const session = await auth.api.getSession({
@@ -43,33 +42,31 @@ export async function listUpcomingBlackouts() {
   const org = await getCurrentUserOrg();
 
   const nowUtc = new Date();
-  const orgNow = tz.utcToZonedTime(nowUtc, org.timezone);
-
-  // Start of today in org timezone -> UTC
-  const startOfTodayLocal = new Date(
-    orgNow.getFullYear(),
-    orgNow.getMonth(),
-    orgNow.getDate(),
-    0,
-    0,
-    0,
-    0,
+  // Start of today in UTC
+  const startOfTodayUtc = new Date(
+    Date.UTC(
+      nowUtc.getUTCFullYear(),
+      nowUtc.getUTCMonth(),
+      nowUtc.getUTCDate(),
+      0,
+      0,
+      0,
+      0,
+    ),
   );
-  const startOfTodayUtc = tz.zonedTimeToUtc(startOfTodayLocal, org.timezone);
 
   const rows = await db
     .select()
     .from(blackoutDate)
-    .where(and(eq(blackoutDate.organizationId, org.id), gte(blackoutDate.date, startOfTodayUtc)))
+      .where(and(eq(blackoutDate.organizationId, org.id), gte(blackoutDate.date, startOfTodayUtc)))
     .orderBy(blackoutDate.date);
 
   return rows;
 }
 
-function normalizeSingleDateToUtc(input: BlackoutDateInput, timezone: string): Date {
+function normalizeSingleDateToUtc(input: BlackoutDateInput): Date {
   const [year, month, day] = input.date.split("-").map((part) => Number(part));
-  const localStart = new Date(year, month - 1, day, 0, 0, 0, 0);
-  return tz.zonedTimeToUtc(localStart, timezone);
+  return new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
 }
 
 function* enumerateDateRange(from: string, to: string): Generator<string> {
@@ -100,7 +97,7 @@ export async function createBlackoutDates(input: BlackoutDateInput | BlackoutDat
         staffId: parsed.staffId ?? null,
         reason: parsed.reason,
       };
-      dates.push(normalizeSingleDateToUtc(single, org.timezone));
+      dates.push(normalizeSingleDateToUtc(single));
     }
 
     if (dates.length === 0) return;
@@ -116,7 +113,7 @@ export async function createBlackoutDates(input: BlackoutDateInput | BlackoutDat
     );
   } else {
     const parsed = BlackoutDateSchema.parse(input);
-    const date = normalizeSingleDateToUtc(parsed, org.timezone);
+    const date = normalizeSingleDateToUtc(parsed);
 
     await db.insert(blackoutDate).values({
       id: crypto.randomUUID(),

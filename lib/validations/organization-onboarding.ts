@@ -9,7 +9,8 @@ export const OrganizationOnboardingSchema = z.object({
   logo: z.string().url("Logo must be a valid URL").nullable().optional(),
   primaryColor: z.string().optional(),
   bookingHeadline: z.string().optional(),
-  timezone: z.string().min(1, "Timezone is required"),
+  // Timezone is fixed to UTC globally; we keep the field for typings but do not expose it in UI.
+  timezone: z.literal("UTC").default("UTC"),
   currency: z.enum(["INR", "USD"]),
   minAdvanceHours: z.number().int().min(0).max(72),
   maxAdvanceDays: z.number().int().min(1).max(365),
