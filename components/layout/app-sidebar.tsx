@@ -10,11 +10,13 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { User } from "@/lib/db/db";
 import { NavProjects } from "@/components/layout/nav-projects";
 import {
   sidebarNavMain,
+  sidebarNavSchedule,
   sidebarNavStaff,
   sidebarProjects,
 } from "@/config/navigation";
@@ -37,6 +39,15 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           items={user?.role === "staff" ? sidebarNavStaff : sidebarNavMain}
           groupLabel={user?.role === "staff" ? "Staff" : "Main"}
         />
+        {user?.role !== "staff" && (
+          <>
+            <SidebarSeparator />
+            <NavMain
+              items={sidebarNavSchedule}
+              groupLabel="Schedule"
+            />
+          </>
+        )}
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
         {/* <NavProjects projects={sidebarProjects} /> */}
       </SidebarContent>

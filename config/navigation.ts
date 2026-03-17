@@ -11,6 +11,12 @@ import {
   MonitorIcon,
   CreditCardIcon,
   Calendar,
+  Tag,
+  Bell,
+  Wallet,
+  Layout,
+  Palette,
+  Globe,
 } from "lucide-react";
 import { Frame, Map, PieChart } from "lucide-react";
 
@@ -55,9 +61,8 @@ export const NAV_MENUS: NavMenuGroup[] = [
   },
   {
     id: "admin-sidebar",
-    title: "Admin sidebar nav",
-    context:
-      "Full dashboard access — services, customers, payments, settings",
+    title: "Admin sidebar nav (primary)",
+    context: "Primary nav — Dashboard, Calendar, Bookings, Customers, Services, Staff, Coupons",
     items: [
       { label: "Dashboard", type: "link", url: "/dashboard", icon: LayoutIcon },
       { label: "Calendar", type: "link", url: "/dashboard/calendar", icon: Calendar },
@@ -65,9 +70,17 @@ export const NAV_MENUS: NavMenuGroup[] = [
       { label: "Customers", type: "link", url: "/dashboard/customers", icon: Users },
       { label: "Services", type: "link", url: "/dashboard/services", icon: LayoutIcon },
       { label: "Staff", type: "link", url: "/dashboard/staff", icon: Users, badge: "Pro+" },
+      { label: "Coupons", type: "link", url: "/dashboard/coupons", icon: Tag },
+      { label: "Settings", type: "link", url: "/dashboard/settings", icon: Settings },
+    ],
+  },
+  {
+    id: "admin-sidebar-schedule",
+    title: "Schedule section (top-level with divider)",
+    context: "Availability, Blackouts — below primary nav with section divider",
+    items: [
       { label: "Availability", type: "link", url: "/dashboard/availability", icon: UserCircle },
       { label: "Blackouts", type: "link", url: "/dashboard/blackouts", icon: Calendar },
-      { label: "Settings", type: "link", url: "/dashboard/settings", icon: Settings },
     ],
   },
   {
@@ -88,36 +101,18 @@ export const NAV_MENUS: NavMenuGroup[] = [
     context:
       "Horizontal tabs inside /dashboard/settings on desktop, list on mobile",
     items: [
-      {
-        label: "Profile",
-        type: "link",
-        url: "/dashboard/settings/profile",
-        icon: UserCircle,
-      },
-      {
-        label: "Organization",
-        type: "link",
-        url: "/dashboard/settings/organization",
-        icon: UserCircle,
-      },
-      {
-        label: "Security",
-        type: "link",
-        url: "/dashboard/settings/security",
-        icon: ShieldCheckIcon,
-      },
-      {
-        label: "Appearance",
-        type: "link",
-        url: "/dashboard/settings/preference",
-        icon: MonitorIcon,
-      },
-      {
-        label: "Billing",
-        type: "link",
-        url: "/dashboard/settings/billing",
-        icon: CreditCardIcon,
-      },
+      { label: "Profile", type: "link", url: "/dashboard/settings/profile", icon: UserCircle },
+      { label: "Organization", type: "link", url: "/dashboard/settings/organization", icon: UserCircle },
+      { label: "Availability", type: "link", url: "/dashboard/settings/availability", icon: UserCircle },
+      { label: "Notifications", type: "link", url: "/dashboard/settings/notifications", icon: Bell },
+      { label: "Payments", type: "link", url: "/dashboard/settings/payments", icon: Wallet },
+      { label: "Security", type: "link", url: "/dashboard/settings/security", icon: ShieldCheckIcon },
+      { label: "Appearance", type: "link", url: "/dashboard/settings/preference", icon: MonitorIcon },
+      { label: "Billing", type: "link", url: "/dashboard/settings/billing", icon: CreditCardIcon },
+      { label: "Widget", type: "link", url: "/dashboard/settings/widget", icon: Layout, badge: "Pro+" },
+      { label: "Branding", type: "link", url: "/dashboard/settings/branding", icon: Palette, badge: "Agency" },
+      { label: "Domain", type: "link", url: "/dashboard/settings/domain", icon: Globe, badge: "Agency" },
+      { label: "Team", type: "link", url: "/dashboard/settings/team", icon: Users },
     ],
   },
   {
@@ -142,35 +137,41 @@ export const NAV_MENUS: NavMenuGroup[] = [
  * Derived structures tailored to existing components.
  */
 
-// Sidebar main navigation for regular users/admins, in the structure
-// expected by NavMain (title, url, icon, items?).
+// Primary nav: Dashboard, Calendar, Bookings, Customers, Services, Staff, Coupons, Settings (expandable).
 export const sidebarNavMain: {
   title: string;
   url: string;
   icon: React.ElementType;
-  items?: {
-    title: string;
-    url: string;
-    icon?: React.ElementType;
-  }[];
+  items?: { title: string; url: string; icon?: React.ElementType }[];
 }[] = (NAV_MENUS.find((m) => m.id === "admin-sidebar")?.items ?? [])
-  // Only include link-type items that have URLs for the main sidebar.
   .filter((item) => item.type === "link" && item.url)
   .map((item) => ({
     title: item.label,
     url: item.url as string,
     icon: (item.icon ?? LayoutIcon) as React.ElementType,
-    // Keep existing settings sub‑items wired to settings-tabs.
     items:
       item.label === "Settings"
         ? NAV_MENUS.find((m) => m.id === "settings-tabs")?.items.map(
-          (settingsItem) => ({
-            title: settingsItem.label,
-            url: settingsItem.url ?? "/dashboard/settings",
-            icon: settingsItem.icon,
-          })
-        )
+            (settingsItem) => ({
+              title: settingsItem.label,
+              url: settingsItem.url ?? "/dashboard/settings",
+              icon: settingsItem.icon,
+            })
+          )
         : undefined,
+  }));
+
+// Schedule section: Availability, Blackouts (shown below primary nav with divider).
+export const sidebarNavSchedule: {
+  title: string;
+  url: string;
+  icon: React.ElementType;
+}[] = (NAV_MENUS.find((m) => m.id === "admin-sidebar-schedule")?.items ?? [])
+  .filter((item) => item.type === "link" && item.url)
+  .map((item) => ({
+    title: item.label,
+    url: item.url as string,
+    icon: (item.icon ?? UserCircle) as React.ElementType,
   }));
 
 // Staff sidebar nav — derived from staff-sidebar (link items only).
