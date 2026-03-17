@@ -1,17 +1,6 @@
 "use client";
+
 import * as React from "react";
-import {
-  IconDashboard,
-  IconMail,
-  IconSettings,
-  IconShieldLock,
-  IconShieldStar,
-  IconUserCircle,
-  IconUsers,
-  IconDeviceDesktop,
-  IconCreditCard,
-  IconCalendar,
-} from "@tabler/icons-react";
 
 import { NavMain } from "@/components/layout/nav-main";
 import { NavUser } from "@/components/layout/nav-user";
@@ -24,92 +13,11 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "@/lib/db/db";
 import { NavProjects } from "@/components/layout/nav-projects";
-import { Frame, Map, PieChart } from "lucide-react";
-import { title } from "process";
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
-    },
-    {
-      title: "Account",
-      url: "/dashboard/account",
-      icon: IconUserCircle,
-    },
-    {
-      title: "Availability",
-      url: "/dashboard/availability",
-      icon: IconUserCircle,
-    },
-    {
-      title: "Blackouts",
-      url: "/dashboard/blackouts",
-      icon: IconCalendar,
-    },
-    {
-      title: "Setting",
-      url: "/dashboard/settings",
-      icon: IconSettings,
-      items: [
-        {
-          title: "Profile",
-          url: "/dashboard/settings/profile",
-          icon: IconUserCircle,
-        },
-        {
-          title: "Organization",
-          url: "/dashboard/settings/organization",
-          icon: IconUserCircle,
-        },
-        {
-          title: "Security",
-          url: "/dashboard/settings/security",
-          icon: IconShieldLock,
-        },
-        {
-          title: "Appearance",
-          url: "/dashboard/settings/preference",
-          icon: IconDeviceDesktop,
-        },
-        {
-          title: "Billing",
-          url: "/dashboard/settings/billing",
-          icon: IconCreditCard,
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-  navAdmin: [
-    {
-      title: "Admin",
-      url: "/admin",
-      icon: IconShieldStar,
-      items: [
-        { title: "Users", url: "/admin/users", icon: IconUsers },
-        { title: "Mail", url: "/admin/mail", icon: IconMail },
-      ],
-    },
-  ],
-};
+import {
+  sidebarNavMain,
+  sidebarNavStaff,
+  sidebarProjects,
+} from "@/config/navigation";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: Partial<User>;
@@ -125,12 +33,12 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         {/* <TeamSwitcher teams={data.teams} /> */}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        {user?.role === "admin" && (
-          <NavMain items={data.navAdmin} groupLabel="Admin" />
-        )}
+        <NavMain
+          items={user?.role === "staff" ? sidebarNavStaff : sidebarNavMain}
+          groupLabel={user?.role === "staff" ? "Staff" : "Main"}
+        />
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={sidebarProjects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

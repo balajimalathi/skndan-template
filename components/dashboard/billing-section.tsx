@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IconCreditCard, IconDownload } from "@tabler/icons-react";
+import { CreditCard, Download } from "lucide-react";
 import { getPlanById, type Plan } from "@/lib/billing/plans";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth/auth-client";
@@ -148,7 +148,7 @@ export default function BillingSection({ subscription, plans }: BillingSectionPr
                       window.location.href = customerPortal.url;
                     }
                   }}
-                   
+
                 >
                   Manage subscription
                 </Button>
@@ -239,7 +239,7 @@ export default function BillingSection({ subscription, plans }: BillingSectionPr
               <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
                 <div className="flex items-center space-x-4">
                   <div className="flex h-10 w-14 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800">
-                    <IconCreditCard className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
+                    <CreditCard className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
                   </div>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Add or update payment methods when you subscribe or change plan.
@@ -296,7 +296,7 @@ export default function BillingSection({ subscription, plans }: BillingSectionPr
                           size="icon"
                           className="ml-auto text-zinc-500 dark:text-zinc-400"
                         >
-                          <IconDownload className="h-4 w-4" />
+                          <Download className="h-4 w-4" size={16} />
                           <span className="sr-only">Download</span>
                         </Button>
                       </div>

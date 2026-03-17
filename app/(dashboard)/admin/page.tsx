@@ -6,21 +6,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { IconUsers, IconMail, IconChartBar } from "@tabler/icons-react";
+import { Users, Mail } from "lucide-react";
 
 const sections = [
   {
     title: "Users",
     description: "Manage users, roles, and ban status.",
     href: "/admin/users",
-    icon: IconUsers,
+    icon: Users,
   },
   {
     title: "Mail",
     description: "Configure mail and event-triggered email rules.",
     href: "/admin/mail",
-    icon: IconMail,
-  }, 
+    icon: Mail,
+  },
 ];
 
 export default function AdminPage() {

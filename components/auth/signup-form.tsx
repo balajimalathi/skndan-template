@@ -16,9 +16,8 @@ import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth/auth-client";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Terminal } from "lucide-react";
+import { Loader, Terminal } from "lucide-react";
 import { toast } from "sonner";
-import { IconLoader } from "@tabler/icons-react";
 import { PasswordInput } from "../ui/password-input";
 
 export function SignupForm({
@@ -136,7 +135,7 @@ export function SignupForm({
               <div className="flex flex-col gap-3">
                 <Button disabled={loading} type="submit" className="w-full">
                   {loading ? (
-                    <IconLoader className="animate-spin" stroke={2} />
+                    <Loader className="animate-spin" size={16} />
                   ) : (
                     "Sign Up"
                   )}

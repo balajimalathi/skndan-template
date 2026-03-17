@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IconH1, IconLoader } from "@tabler/icons-react";
+import { Loader } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -84,7 +84,7 @@ export default function Page() {
             <div className="flex flex-col gap-3">
               <Button disabled={loading} type="submit" className="w-full">
                 {loading ? (
-                  <IconLoader className="animate-spin" stroke={2} />
+                  <Loader className="animate-spin" size={16} />
                 ) : (
                   "Save"
                 )}
