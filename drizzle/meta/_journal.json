@@ -22,6 +22,13 @@
       "when": 1773680587781,
       "tag": "0002_redundant_thunderbolts",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773742503383,
+      "tag": "0003_dashing_purple_man",
+      "breakpoints": true
     }
   ]
 }

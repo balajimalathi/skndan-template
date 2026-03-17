@@ -16,6 +16,11 @@ export const OrganizationOnboardingSchema = z.object({
   maxAdvanceDays: z.number().int().min(1).max(365),
   bufferMinutes: z.number().int().min(0).max(120),
   cancellationPolicyHours: z.number().int().min(0).max(168),
+  paymentGateway: z.enum(["RAZORPAY", "DODOPAYMENTS"]).default("RAZORPAY"),
+  razorpayKeyId: z.string().optional().nullable(),
+  razorpayKeySecret: z.string().optional().nullable(),
+  dodopayClientId: z.string().optional().nullable(),
+  dodopayClientSecret: z.string().optional().nullable(),
 });
 
 export type OrganizationOnboardingInput = z.infer<typeof OrganizationOnboardingSchema>;

@@ -92,5 +92,46 @@ describe("getAvailableSlots", () => {
 
     expect(slots).toEqual([]);
   });
+
+  it("blocks slots around an existing booking using bufferMinutes", async () => {
+    // Existing booking on Monday 2024-01-01 from 10:00 to 11:00 UTC,
+    // with org.bufferMinutes = 15, duration = 60.
+    await db.insert(booking).values({
+      id: "booking-1",
+      reference: "REF-1",
+      serviceId,
+      staffId,
+      organizationId: orgId,
+      customerName: "Alice",
+      customerEmail: "alice@example.com",
+      customerPhone: null,
+      startTime: new Date("2024-01-01T10:00:00Z"),
+      endTime: new Date("2024-01-01T11:00:00Z"),
+      status: "CONFIRMED",
+      paymentGateway: "FREE",
+      paymentId: null,
+      paymentStatus: "PENDING",
+      amountPaid: null,
+      notes: null,
+      createdAt: new Date(),
+    });
+
+    const slots = await getAvailableSlots({
+      orgId,
+      staffId,
+      serviceId,
+      date: "2024-01-01",
+    });
+
+    // Availability 09:00–17:00 UTC, 60-minute service, 15-minute buffer.
+    // The booking from 10:00–11:00 with ±15 min buffer blocks 09:15–11:15.
+    // Candidate starts: 09:00, 10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00.
+    // Blocking logic should remove 09:30–11:00 equivalents; in terms of start
+    // times this means 09:30 and 10:00 equivalents. With our 60-minute step,
+    // 10:00 is removed, but 09:00 and 11:00 remain.
+    expect(slots).toContain("09:00");
+    expect(slots).not.toContain("10:00");
+    expect(slots).toContain("11:00");
+  });
 });
 

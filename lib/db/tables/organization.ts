@@ -21,6 +21,11 @@ export const organization = pgTable("organization", {
   maxAdvanceDays: integer("max_advance_days").notNull(),
   bufferMinutes: integer("buffer_minutes").notNull(),
   cancellationPolicyHours: integer("cancellation_policy_hours").notNull(),
+  paymentGateway: text("payment_gateway"),
+  razorpayKeyId: text("razorpay_key_id"),
+  razorpayKeySecret: text("razorpay_key_secret"),
+  dodopayClientId: text("dodopay_client_id"),
+  dodopayClientSecret: text("dodopay_client_secret"),
   createdAt: timestamp("created_at").notNull(),
 });
 

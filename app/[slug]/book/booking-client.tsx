@@ -2,9 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 
 type Organization = {
@@ -36,13 +41,21 @@ type Props = {
   services: ServiceSummary[];
   staffForService: StaffForService[];
 };
+const BookingFormSchema = z.object({
+  customerName: z.string().min(1, "Name is required"),
+  customerEmail: z.string().email("Enter a valid email"),
+  customerPhone: z
+    .string()
+    .min(5, "Enter a valid phone")
+    .max(20, "Phone number is too long")
+    .optional()
+    .or(z.literal("")),
+});
 
-type BookingFormState = {
-  customerName: string;
-  customerEmail: string;
-};
+type BookingFormValues = z.infer<typeof BookingFormSchema>;
 
 export default function BookingClient({ organization, services, staffForService }: Props) {
+  const router = useRouter();
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     services.length > 0 ? services[0].id : null,
   );
@@ -51,12 +64,17 @@ export default function BookingClient({ organization, services, staffForService 
   const [slots, setSlots] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [formState, setFormState] = useState<BookingFormState>({
-    customerName: "",
-    customerEmail: "",
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userTimezone, setUserTimezone] = useState<string | null>(null);
+
+  const form = useForm<BookingFormValues>({
+    resolver: zodResolver(BookingFormSchema),
+    defaultValues: {
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+    },
+  });
 
   const activeServices = services.filter((s) => s.isActive);
 
@@ -119,15 +137,9 @@ export default function BookingClient({ organization, services, staffForService 
     void loadSlots();
   }, [organization.id, selectedServiceId, selectedStaffId, selectedDate]);
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(values: BookingFormValues) {
     if (!selectedServiceId || !selectedStaffId || !selectedDate || !selectedSlot) {
       toast.error("Please select a service, staff member, date, and time slot");
-      return;
-    }
-
-    if (!formState.customerName || !formState.customerEmail) {
-      toast.error("Please enter your name and email");
       return;
     }
 
@@ -140,8 +152,9 @@ export default function BookingClient({ organization, services, staffForService 
         staffId: selectedStaffId,
         date: dateStr,
         time: selectedSlot,
-        customerName: formState.customerName,
-        customerEmail: formState.customerEmail,
+        customerName: values.customerName,
+        customerEmail: values.customerEmail,
+        customerPhone: values.customerPhone || null,
       };
 
       const res = await fetch("/api/booking/create", {
@@ -157,9 +170,51 @@ export default function BookingClient({ organization, services, staffForService 
         throw new Error(data.error ?? "Failed to create booking");
       }
 
-      toast.success("Booking confirmed");
-      setSelectedSlot(null);
-      setFormState({ customerName: "", customerEmail: "" });
+      const data = (await res.json()) as {
+        id: string;
+        reference: string;
+        paymentGateway: string;
+      };
+
+      if (data.paymentGateway === "FREE") {
+        toast.success("Booking confirmed");
+        router.push(`/booking/${data.reference}`);
+        return;
+      }
+
+      // For paid bookings, create a payment checkout session using the unified API.
+      const checkoutRes = await fetch("/api/payments/create-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bookingId: data.id }),
+      });
+
+      if (!checkoutRes.ok) {
+        const checkoutError = await checkoutRes.json().catch(() => ({}));
+        throw new Error(checkoutError.error ?? "Failed to create payment checkout");
+      }
+
+      const checkout = (await checkoutRes.json()) as {
+        provider: string;
+        payload: { redirectUrl?: string } | null;
+      };
+
+      if (checkout.provider === "FREE") {
+        toast.success("Booking confirmed");
+        router.push(`/booking/${data.reference}`);
+        return;
+      }
+
+      if (checkout.payload && checkout.payload.redirectUrl) {
+        toast.success("Booking created. Redirecting to payment...");
+        window.location.href = checkout.payload.redirectUrl;
+        return;
+      }
+
+      toast.success("Booking created. Complete payment to confirm.");
+      router.push(`/booking/${data.reference}`);
     } catch (error) {
       console.error(error);
       toast.error(
@@ -220,35 +275,59 @@ export default function BookingClient({ organization, services, staffForService 
 
         <div className="space-y-3 rounded-md border p-4">
           <h2 className="text-sm font-medium">Your details</h2>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium">Name</label>
-                <Input
-                  value={formState.customerName}
-                  onChange={(event) =>
-                    setFormState((prev) => ({ ...prev, customerName: event.target.value }))
-                  }
-                  placeholder="Your full name"
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-3"
+              noValidate
+            >
+              <div className="grid gap-3 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="customerName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your full name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="customerEmail"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium">Email</label>
-                <Input
-                  type="email"
-                  value={formState.customerEmail}
-                  onChange={(event) =>
-                    setFormState((prev) => ({ ...prev, customerEmail: event.target.value }))
-                  }
-                  placeholder="you@example.com"
-                />
-              </div>
-            </div>
+              <FormField
+                control={form.control}
+                name="customerPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Phone (optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+91 98765 43210" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button type="submit" className="w-full" disabled={isSubmitting || !selectedSlot}>
-              {isSubmitting ? "Booking..." : selectedSlot ? "Confirm booking" : "Select a slot"}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !selectedSlot}>
+                {isSubmitting ? "Booking..." : selectedSlot ? "Confirm booking" : "Select a slot"}
+              </Button>
+            </form>
+          </Form>
           <div className="mt-2 space-y-1 text-xs text-muted-foreground">
             <p>
               Bookings are stored in UTC and converted to your local timezone in this view. Advance

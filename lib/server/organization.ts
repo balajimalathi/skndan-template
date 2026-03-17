@@ -31,6 +31,11 @@ export type OrganizationOnboardingInput = {
   maxAdvanceDays: number;
   bufferMinutes: number;
   cancellationPolicyHours: number;
+  paymentGateway?: string | null;
+  razorpayKeyId?: string | null;
+  razorpayKeySecret?: string | null;
+  dodopayClientId?: string | null;
+  dodopayClientSecret?: string | null;
 };
 
 export async function createOrganizationForUser(userId: string, data: OrganizationOnboardingInput) {
@@ -50,6 +55,11 @@ export async function createOrganizationForUser(userId: string, data: Organizati
       maxAdvanceDays: data.maxAdvanceDays,
       bufferMinutes: data.bufferMinutes,
       cancellationPolicyHours: data.cancellationPolicyHours,
+      paymentGateway: data.paymentGateway ?? "RAZORPAY",
+      razorpayKeyId: data.razorpayKeyId ?? null,
+      razorpayKeySecret: data.razorpayKeySecret ?? null,
+      dodopayClientId: data.dodopayClientId ?? null,
+      dodopayClientSecret: data.dodopayClientSecret ?? null,
       createdAt: new Date(),
     });
 
@@ -85,6 +95,11 @@ export async function updateOrganizationForUser(userId: string, data: Organizati
       maxAdvanceDays: data.maxAdvanceDays,
       bufferMinutes: data.bufferMinutes,
       cancellationPolicyHours: data.cancellationPolicyHours,
+      paymentGateway: data.paymentGateway ?? "RAZORPAY",
+      razorpayKeyId: data.razorpayKeyId ?? null,
+      razorpayKeySecret: data.razorpayKeySecret ?? null,
+      dodopayClientId: data.dodopayClientId ?? null,
+      dodopayClientSecret: data.dodopayClientSecret ?? null,
     })
     .where(eq(organization.id, membership.organizationId));
 }

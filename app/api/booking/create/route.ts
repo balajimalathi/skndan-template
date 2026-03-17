@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db/db";
-import { booking, organization, service, staff } from "@/lib/db/schema";
+import { booking, customer, organization, service, staff } from "@/lib/db/schema";
 import { and, eq, lt, gt } from "drizzle-orm";
 import { addMinutes } from "date-fns";
 
@@ -13,6 +13,7 @@ const CreateBookingSchema = z.object({
   time: z.string().regex(/^\d{2}:\d{2}$/),
   customerName: z.string().min(1),
   customerEmail: z.string().email(),
+  customerPhone: z.string().min(5).max(20).optional().nullable(),
 });
 
 export async function POST(request: NextRequest) {
@@ -54,51 +55,113 @@ export async function POST(request: NextRequest) {
     const startTimeUtc = new Date(Date.UTC(year, month - 1, day, hour, minute, 0, 0));
     const endTimeUtc = addMinutes(startTimeUtc, svc.duration);
 
-    // Enforce that the slot is still available by re-checking against existing bookings.
-    const overlapping = await db
-      .select()
-      .from(booking)
-      .where(
-        and(
-          eq(booking.organizationId, org.id),
-          eq(booking.staffId, staffRow.id),
-          eq(booking.serviceId, svc.id),
-          // basic overlap check: start < existingEnd && end > existingStart
-          lt(booking.startTime, endTimeUtc),
-          gt(booking.endTime, startTimeUtc),
-        ),
-      );
+    const result = await db.transaction(async (tx) => {
+      // Re-check slot availability inside the transaction to avoid race conditions.
+      const overlapping = await tx
+        .select()
+        .from(booking)
+        .where(
+          and(
+            eq(booking.organizationId, org.id),
+            eq(booking.staffId, staffRow.id),
+            eq(booking.serviceId, svc.id),
+            // basic overlap check: start < existingEnd && end > existingStart
+            lt(booking.startTime, endTimeUtc),
+            gt(booking.endTime, startTimeUtc),
+          ),
+        );
 
-    if (overlapping.length > 0) {
+      if (overlapping.length > 0) {
+        return {
+          conflict: true as const,
+        };
+      }
+
+      // Upsert customer by organization + email.
+      const existingCustomer = await tx.query.customer.findFirst({
+        where: (c, { and, eq }) =>
+          and(eq(c.organizationId, org.id), eq(c.email, parsed.customerEmail)),
+      });
+
+      let customerId: string | null = null;
+
+      if (existingCustomer) {
+        customerId = existingCustomer.id;
+        const shouldUpdatePhone =
+          parsed.customerPhone && parsed.customerPhone !== existingCustomer.phone;
+        const shouldUpdateName = parsed.customerName !== existingCustomer.name;
+
+        if (shouldUpdateName || shouldUpdatePhone) {
+          await tx
+            .update(customer)
+            .set({
+              name: shouldUpdateName ? parsed.customerName : existingCustomer.name,
+              phone: shouldUpdatePhone ? parsed.customerPhone : existingCustomer.phone,
+            })
+            .where(eq(customer.id, existingCustomer.id));
+        }
+      } else {
+        customerId = crypto.randomUUID();
+        await tx.insert(customer).values({
+          id: customerId,
+          organizationId: org.id,
+          email: parsed.customerEmail,
+          name: parsed.customerName,
+          phone: parsed.customerPhone ?? null,
+        });
+      }
+
+      const id = crypto.randomUUID();
+      const reference = id.slice(0, 8).toUpperCase();
+
+      const now = new Date();
+      const paymentGateway = org.paymentGateway ?? "FREE";
+      const isFree = paymentGateway === "FREE";
+
+      await tx.insert(booking).values({
+        id,
+        reference,
+        organizationId: org.id,
+        serviceId: svc.id,
+        staffId: staffRow.id,
+        customerName: parsed.customerName,
+        customerEmail: parsed.customerEmail,
+        customerPhone: parsed.customerPhone ?? null,
+        startTime: startTimeUtc,
+        endTime: endTimeUtc,
+        status: isFree ? "CONFIRMED" : "PENDING",
+        paymentGateway,
+        paymentId: null,
+        paymentStatus: isFree ? "PAID" : "PENDING",
+        amountPaid: isFree ? (svc.price as any) : null,
+        notes: null,
+        createdAt: now,
+      } as typeof booking.$inferInsert);
+
+      return {
+        conflict: false as const,
+        bookingId: id,
+        reference,
+        paymentGateway,
+        amount: svc.price,
+        currency: org.currency,
+      };
+    });
+
+    if (result.conflict) {
       return NextResponse.json(
         { error: "This slot has just been taken. Please choose another time." },
         { status: 409 },
       );
     }
 
-    const id = crypto.randomUUID();
-
-    await db.insert(booking).values({
-      id,
-      reference: id,
-      organizationId: org.id,
-      serviceId: svc.id,
-      staffId: staffRow.id,
-      customerName: parsed.customerName,
-      customerEmail: parsed.customerEmail,
-      customerPhone: null,
-      startTime: startTimeUtc,
-      endTime: endTimeUtc,
-      status: "CONFIRMED",
-      paymentGateway: "FREE",
-      paymentId: null,
-      paymentStatus: "PENDING",
-      amountPaid: "0",
-      notes: null,
-      createdAt: new Date(),
+    return NextResponse.json({
+      id: result.bookingId,
+      reference: result.reference,
+      paymentGateway: result.paymentGateway,
+      amount: result.amount,
+      currency: result.currency,
     });
-
-    return NextResponse.json({ id });
   } catch (error) {
     console.error("Error creating booking", error);
     if (error instanceof z.ZodError) {

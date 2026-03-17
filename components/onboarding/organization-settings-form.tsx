@@ -30,6 +30,11 @@ type Props = {
     maxAdvanceDays: number;
     bufferMinutes: number;
     cancellationPolicyHours: number;
+    paymentGateway: string | null;
+    razorpayKeyId: string | null;
+    razorpayKeySecret: string | null;
+    dodopayClientId: string | null;
+    dodopayClientSecret: string | null;
   };
 };
 
@@ -47,6 +52,11 @@ export function OrganizationSettingsForm({ organization }: Props) {
       maxAdvanceDays: organization.maxAdvanceDays,
       bufferMinutes: organization.bufferMinutes,
       cancellationPolicyHours: organization.cancellationPolicyHours,
+      paymentGateway: organization.paymentGateway ?? "RAZORPAY",
+      razorpayKeyId: organization.razorpayKeyId ?? "",
+      razorpayKeySecret: organization.razorpayKeySecret ?? "",
+      dodopayClientId: organization.dodopayClientId ?? "",
+      dodopayClientSecret: organization.dodopayClientSecret ?? "",
     },
   });
 
@@ -206,6 +216,99 @@ export function OrganizationSettingsForm({ organization }: Props) {
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Payment settings</h2>
+          <FormField
+            control={form.control}
+            name="paymentGateway"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Payment gateway</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select payment gateway" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="RAZORPAY">Razorpay</SelectItem>
+                    <SelectItem value="DODOPAYMENTS">DodoPay</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Choose which payment gateway to use for collecting payments.
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {form.watch("paymentGateway") === "RAZORPAY" && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="razorpayKeyId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Razorpay Key ID</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="razorpayKeySecret"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Razorpay Key Secret</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {form.watch("paymentGateway") === "DODOPAYMENTS" && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="dodopayClientId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>DodoPay Client ID</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dodopayClientSecret"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>DodoPay Client Secret</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
         </div>
 
         <Button type="submit">Save changes</Button>
