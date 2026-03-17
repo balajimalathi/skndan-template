@@ -40,20 +40,6 @@ export interface NavMenuGroup {
  */
 export const NAV_MENUS: NavMenuGroup[] = [
   {
-    id: "public-header",
-    title: "Public site header",
-    context:
-      "Shown on / and /pricing only — hidden on /book/* and /manage/*",
-    items: [
-      { label: "Logo / BookSlot", type: "brand" },
-      { label: "Features", type: "link", url: "/#features" },
-      { label: "Pricing", type: "link", url: "/pricing" },
-      { label: "Docs", type: "link", url: "/docs" },
-      { label: "Log in", type: "link", url: "/login", gap: true },
-      { label: "Get started →", type: "cta", url: "/signup" },
-    ],
-  },
-  {
     id: "booking-nav",
     title: "Booking page header (minimal)",
     context:
@@ -82,7 +68,6 @@ export const NAV_MENUS: NavMenuGroup[] = [
       { label: "Availability", type: "link", url: "/dashboard/availability", icon: UserCircle },
       { label: "Blackouts", type: "link", url: "/dashboard/blackouts", icon: Calendar },
       { label: "Settings", type: "link", url: "/dashboard/settings", icon: Settings },
-      { label: "Account", type: "link", url: "/dashboard/account", icon: UserCircle, gap: true },
     ],
   },
   {
@@ -179,12 +164,12 @@ export const sidebarNavMain: {
     items:
       item.label === "Settings"
         ? NAV_MENUS.find((m) => m.id === "settings-tabs")?.items.map(
-            (settingsItem) => ({
-              title: settingsItem.label,
-              url: settingsItem.url ?? "/dashboard/settings",
-              icon: settingsItem.icon,
-            })
-          )
+          (settingsItem) => ({
+            title: settingsItem.label,
+            url: settingsItem.url ?? "/dashboard/settings",
+            icon: settingsItem.icon,
+          })
+        )
         : undefined,
   }));
 

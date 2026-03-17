@@ -24,9 +24,12 @@ import {
 import { User } from "@/lib/db/db";
 import LogoutButton from "@/components/auth/logout-button";
 import { ChevronsUpDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function NavUser({ user }: { user: Partial<User> }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -83,7 +86,9 @@ export function NavUser({ user }: { user: Partial<User> }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={
+                () => router.push("/dashboard/account")
+              }>
                 <UserCircle />
                 Account
               </DropdownMenuItem>
