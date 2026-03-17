@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db/db";
 import { booking, customer, organization, service, staff } from "@/lib/db/schema";
 import { and, eq, lt, gt } from "drizzle-orm";
+import { sendBookingConfirmationEmail } from "@/lib/mail/booking-emails";
 import { addMinutes } from "date-fns";
 
 const CreateBookingSchema = z.object({
@@ -153,6 +154,33 @@ export async function POST(request: NextRequest) {
         { error: "This slot has just been taken. Please choose another time." },
         { status: 409 },
       );
+    }
+
+    try {
+      const [created] = await db
+        .select({
+          booking,
+          organization,
+          service,
+          staff,
+        })
+        .from(booking)
+        .innerJoin(organization, eq(booking.organizationId, organization.id))
+        .innerJoin(service, eq(booking.serviceId, service.id))
+        .innerJoin(staff, and(eq(booking.staffId, staff.id), eq(staff.organizationId, organization.id)))
+        .where(eq(booking.id, result.bookingId))
+        .limit(1);
+
+      if (created) {
+        await sendBookingConfirmationEmail({
+          booking: created.booking,
+          organization: created.organization,
+          service: created.service,
+          staff: created.staff,
+        });
+      }
+    } catch (emailError) {
+      console.error("Error sending booking confirmation email", emailError);
     }
 
     return NextResponse.json({
