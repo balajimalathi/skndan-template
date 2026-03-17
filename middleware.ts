@@ -11,7 +11,10 @@ function getSubdomain(host: string | null): string | null {
 }
 
 export async function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone();
+  const requestHeaders = new Headers(req.headers);
+
+  // Always include the current pathname so layouts/pages can branch on it.
+  requestHeaders.set("x-pathname", req.nextUrl.pathname);
 
   // Subdomain-based organization resolution
   const subdomain = getSubdomain(req.headers.get("host"));
@@ -20,20 +23,20 @@ export async function middleware(req: NextRequest) {
       where: (org, { eq }) => eq(org.slug, subdomain),
     });
     if (org) {
-      const requestHeaders = new Headers(req.headers);
       requestHeaders.set("x-org-id", org.id);
-      return NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      });
     }
   }
 
-  return NextResponse.next();
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  // Run on all app routes so `x-pathname` is always available,
+  // and still support dashboard subdomain resolution.
+  matcher: ["/:path*"],
 };
 

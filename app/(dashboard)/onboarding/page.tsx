@@ -10,7 +10,7 @@ export default async function OnboardingPage() {
   });
 
   if (!session?.user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const organization = await getUserOrganization(session.user.id);
