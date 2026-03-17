@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,15 +17,71 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
 import { Session, User } from "better-auth";
+import { toast } from "sonner";
+import { z } from "zod";
+import {
+  updateProfileSettings,
+  type ProfileSettingsValues,
+} from "@/app/(dashboard)/dashboard/settings/profile/actions";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const TIMEZONE_OPTIONS = [
+  { value: "pst", label: "Pacific Standard Time (PST)" },
+  { value: "mst", label: "Mountain Standard Time (MST)" },
+  { value: "cst", label: "Central Standard Time (CST)" },
+  { value: "est", label: "Eastern Standard Time (EST)" },
+  { value: "gmt", label: "Greenwich Mean Time (GMT)" },
+];
 
 export function ProfileSection({
   session,
+  initialTimezone,
 }: {
   session: { user: User; session: Session };
+  initialTimezone?: string | null;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(session.user.name);
-  const [email, setEmail] = useState(session.user.email);
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<ProfileSettingsValues>({
+    resolver: zodResolver(
+      z.object({
+        name: z.string().min(1, "Name is required"),
+        email: z.string().email("Enter a valid email"),
+        timezone: z.string().optional().nullable(),
+      }),
+    ),
+    defaultValues: {
+      name: session.user.name ?? "",
+      email: session.user.email ?? "",
+      timezone: initialTimezone ?? undefined,
+    },
+  });
+
+  async function onSubmit(values: ProfileSettingsValues) {
+    startTransition(async () => {
+      const result = await updateProfileSettings(values);
+      if (!result.success) {
+        toast.error(result.error ?? "Failed to update profile");
+        return;
+      }
+      toast.success("Profile updated");
+    });
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -83,91 +141,93 @@ export function ProfileSection({
             Update your personal details.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label
-                htmlFor="firstName"
-                className="text-zinc-900 dark:text-zinc-100"
-              >
-                First name
-              </Label>
-              <Input
-                id="firstName"
-                value={session.user.name}
-                defaultValue="John"
-                disabled={!isEditing}
-                className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="lastName"
-                className="text-zinc-900 dark:text-zinc-100"
-              >
-                Last name
-              </Label>
-              <Input
-                id="lastName"
-                defaultValue="Doe"
-                disabled={!isEditing}
-                className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-zinc-900 dark:text-zinc-100">
-              Email address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={session.user.email}
-              defaultValue="john.doe@example.com"
-              disabled={!isEditing}
-              className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="text-zinc-900 dark:text-zinc-100">
-              Phone number
-            </Label>
-            <Input
-              id="phone"
-              type="tel"
-              defaultValue="+1 (555) 123-4567"
-              disabled={!isEditing}
-              className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end space-x-2 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4">
-          {isEditing ? (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => setIsEditing(false)}
-                className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => setIsEditing(false)}
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
-              >
-                Save changes
-              </Button>
-            </>
-          ) : (
-            <Button
-              onClick={() => setIsEditing(true)}
-              className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
             >
-              Edit profile
-            </Button>
-          )}
-        </CardFooter>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email address</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        disabled={true}
+                        className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="timezone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time zone</FormLabel>
+                    <Select
+                      value={field.value ?? undefined}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger
+                          id="timezone"
+                          className="border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+                        >
+                          <SelectValue placeholder="Select time zone" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {TIMEZONE_OPTIONS.map((tz) => (
+                          <SelectItem key={tz.value} value={tz.value}>
+                            {tz.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <CardFooter className="flex justify-end border-t border-zinc-100 dark:border-zinc-800 px-0 pt-4">
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                >
+                  {isPending ? "Saving..." : "Save changes"}
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </CardContent>
       </Card>
     </div>
   );
 }
+

@@ -46,20 +46,6 @@ export interface NavMenuGroup {
  */
 export const NAV_MENUS: NavMenuGroup[] = [
   {
-    id: "booking-nav",
-    title: "Booking page header (minimal)",
-    context:
-      "Shown on /book/* and /manage/* — no nav links, just business identity",
-    items: [
-      { label: "Business logo + name", type: "brand" },
-      {
-        label: "Powered by BookSlot (toggleable)",
-        type: "muted",
-        gap: true,
-      },
-    ],
-  },
-  {
     id: "admin-sidebar",
     title: "Admin sidebar nav (primary)",
     context: "Primary nav — Dashboard, Calendar, Bookings, Customers, Services, Staff, Coupons",
@@ -114,23 +100,7 @@ export const NAV_MENUS: NavMenuGroup[] = [
       { label: "Domain", type: "link", url: "/dashboard/settings/domain", icon: Globe, badge: "Agency" },
       { label: "Team", type: "link", url: "/dashboard/settings/team", icon: Users },
     ],
-  },
-  {
-    id: "superadmin-sidebar",
-    title: "Super admin sidebar",
-    context: "Separate /superadmin route group — isolated from /dashboard",
-    items: [
-      { label: "Overview", type: "link", url: "/superadmin" },
-      { label: "Tenants", type: "link", url: "/superadmin/tenants" },
-      { label: "Revenue", type: "link", url: "/superadmin/revenue" },
-      {
-        label: "Exit to dashboard",
-        type: "action",
-        url: "/dashboard",
-        gap: true,
-      },
-    ],
-  },
+  }
 ];
 
 /**
@@ -152,12 +122,12 @@ export const sidebarNavMain: {
     items:
       item.label === "Settings"
         ? NAV_MENUS.find((m) => m.id === "settings-tabs")?.items.map(
-            (settingsItem) => ({
-              title: settingsItem.label,
-              url: settingsItem.url ?? "/dashboard/settings",
-              icon: settingsItem.icon,
-            })
-          )
+          (settingsItem) => ({
+            title: settingsItem.label,
+            url: settingsItem.url ?? "/dashboard/settings",
+            icon: settingsItem.icon,
+          })
+        )
         : undefined,
   }));
 
