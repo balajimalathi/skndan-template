@@ -25,7 +25,7 @@ export function EventView({ event }: EventViewProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex flex-row justify-between items-center">
-              <h1>{event?.title}</h1>
+              <span className="text-lg font-semibold">{event?.title}</span>
               <AlertDialogCancel onClick={() => setEventViewOpen(false)}>
                 <X className="h-5 w-5" />
               </AlertDialogCancel>

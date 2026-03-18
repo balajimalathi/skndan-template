@@ -14,8 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "./ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Textarea } from "../ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { HexColorPicker } from "react-colorful";
 import {
   AlertDialog,
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DateTimePicker } from "./date-picker";
 import { useEvents } from "@/context/events-context";
-import { ToastAction } from "./ui/toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const eventAddFormSchema = z.object({
   title: z
@@ -165,8 +165,7 @@ export function AvailabilityCheckerEventAddForm({
                       value={field.value}
                       onChange={field.onChange}
                       hourCycle={12}
-                      granularity="minute"
-                    />
+                      granularity="minute" locale="en" weekStartsOn={1} showWeekNumber={false} showOutsideDays={false} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -184,7 +183,7 @@ export function AvailabilityCheckerEventAddForm({
                       onChange={field.onChange}
                       hourCycle={12}
                       granularity="minute"
-                    />
+                      locale="en" weekStartsOn={1} showWeekNumber={false} showOutsideDays={false} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

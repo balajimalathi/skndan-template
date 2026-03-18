@@ -15,8 +15,8 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "./ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PlusIcon } from "lucide-react";
 import { HexColorPicker } from "react-colorful";
 import {
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DateTimePicker } from "./date-picker";
 import { useEvents } from "@/context/events-context";
-import { ToastAction } from "./ui/toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const eventAddFormSchema = z.object({
   title: z
@@ -162,6 +162,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                       onChange={field.onChange}
                       hourCycle={12}
                       granularity="minute"
+                      locale="en" weekStartsOn={1} showWeekNumber={false} showOutsideDays={false}
                     />
                   </FormControl>
                   <FormMessage />
@@ -180,6 +181,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                       onChange={field.onChange}
                       hourCycle={12}
                       granularity="minute"
+                      locale="en" weekStartsOn={1} showWeekNumber={false} showOutsideDays={false}
                     />
                   </FormControl>
                   <FormMessage />

@@ -10,14 +10,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { ScrollArea } from "./ui/scroll-area";
-import { Card } from "./ui/card";
+import { ScrollArea } from "../ui/scroll-area";
+import { Card } from "../ui/card";
 import Script from "next/script";
 import { useEvents } from "@/context/events-context";
 import { CalendarEvent, earliestTime, latestTime } from "@/utils/data";
 import { getDateFromMinutes } from "@/lib/utils";
 import { AvailabilityCheckerEventAddForm } from "./availability-checker-event-add-form";
-import { TimePicker } from "./ui/time-picker/time-picker";
+import { TimePicker } from "./time-picker/time-picker";
 
 export default function AvailabilityChecker() {
   const { events, setAvailabilityCheckerEventAddOpen } = useEvents();

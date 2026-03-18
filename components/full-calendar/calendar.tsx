@@ -21,9 +21,9 @@ import { useRef, useState } from "react";
 import CalendarNav from "./calendar-nav";
 import { CalendarEvent, earliestTime, latestTime } from "@/utils/data";
 import { getDateFromMinutes } from "@/lib/utils";
-import { Card } from "./ui/card";
 import { EventEditForm } from "./event-edit-form";
 import { EventView } from "./event-view";
+import { Card } from "../ui/card";
 
 type EventItemProps = {
   info: EventContentArg;

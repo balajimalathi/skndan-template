@@ -14,8 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "./ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HexColorPicker } from "react-colorful";
 import {
   AlertDialog,
@@ -29,9 +29,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DateTimePicker } from "./date-picker";
 import { useEvents } from "@/context/events-context";
-import { ToastAction } from "./ui/toast";
+import { ToastAction } from "@/components/ui/toast";
 import { CalendarEvent } from "@/utils/data";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 const eventEditFormSchema = z.object({
   id: z.string(),
@@ -192,6 +192,7 @@ export function EventEditForm({
                       onChange={field.onChange}
                       hourCycle={12}
                       granularity="minute"
+                      locale="en" weekStartsOn={1} showWeekNumber={false} showOutsideDays={false}
                     />
                   </FormControl>
                   <FormMessage />
@@ -210,6 +211,7 @@ export function EventEditForm({
                       onChange={field.onChange}
                       hourCycle={12}
                       granularity="minute"
+                      locale="en" weekStartsOn={1} showWeekNumber={false} showOutsideDays={false}
                     />
                   </FormControl>
                   <FormMessage />

@@ -2,6 +2,8 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
 import { getUserOrganization } from "@/lib/server/organization";
 import { CalendarClient } from "./calendar-client";
+import Calendar from "@/components/full-calendar/calendar";
+import { EventsProvider } from "@/context/events-context";
 
 export default async function Page() {
   const session = await auth.api.getSession({
@@ -22,5 +24,7 @@ export default async function Page() {
     );
   }
 
-  return <CalendarClient organizationId={organization.id} />;
+  return <EventsProvider>
+    <Calendar />
+  </EventsProvider>
 }
