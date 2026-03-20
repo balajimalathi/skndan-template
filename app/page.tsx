@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { Shield, ArrowRight, Layout, ArrowUpRight, LogOut } from "lucide-react";
+import { Shield, ArrowRight, Layout, ArrowUpRight, LogOut, CalendarDays } from "lucide-react";
 import LogoutButton from "@/components/auth/logout-button-icon";
 import HeroSection from "@/components/landing/hero";
 export default async function page() {
@@ -12,11 +12,12 @@ export default async function page() {
     headers: await headers(),
   });
   return (
-    <div className="flex relative min-h-screen flex-col bg-primary">
-      <header className="relative z-20 border-b">
-        <div className="container  flex h-16 items-center justify-between">
-          <div className="flex items-center ">
-            <span className="font-bold text-xl">Better Auth Starter</span>
+    <div className="flex relative min-h-screen flex-col bg-background">
+      <header className="relative z-20 border-b bg-background/50 backdrop-blur-md">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2 text-primary">
+            <CalendarDays className="h-6 w-6" />
+            <span className="font-bold text-xl tracking-tight">Skndan Cal</span>
           </div>
           <nav className="flex items-center gap-6">
             <div className="flex items-center gap-2">
@@ -25,7 +26,7 @@ export default async function page() {
                 <div className="flex gap-2 items-center">
                   <a href="/dashboard">
                     <Button
-                      className="rounded-sm flex items-center gap-2"
+                      className="rounded-full flex items-center gap-2"
                       variant="outline"
                       size="default"
                     >
@@ -38,12 +39,12 @@ export default async function page() {
               ) : (
                 <>
                   <Link href="/login">
-                    <Button className="rounded-sm" variant="outline">
+                    <Button className="rounded-full" variant="ghost">
                       Log in
                     </Button>
                   </Link>
                   <Link href="/login">
-                    <Button className="rounded-sm">Sign up</Button>
+                    <Button className="rounded-full">Get started</Button>
                   </Link>
                 </>
               )}
@@ -52,35 +53,17 @@ export default async function page() {
         </div>
       </header>
       <HeroSection />
-      <footer className="fixed border bottom-0 w-full z-10 border-t flex border-zinc-200 dark:border-zinc-800 py-6 md:bg-black/5 md:dark:bg-black/80 backdrop-blur-sm">
+      <footer className="w-full z-10 border-t border-border py-6 bg-background">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
-          <div className="flex items-center mb-4 md:mb-0">
-            <Shield className="h-5 w-5 mr-2" />
-            <span className="text-sm font-medium">Auth Starter</span>
+          <div className="flex items-center mb-4 md:mb-0 text-muted-foreground">
+            <CalendarDays className="h-5 w-5 mr-2" />
+            <span className="text-sm font-medium">Skndan Cal</span>
           </div>
-          <div className="flex items-center space-x-6">
-            <Link
-              href="https://github.com/better-auth/better-auth"
-              className="text-sm flex gap-2 items-center text-zinc-700 dark:text-zinc-400 dark:hover:text-white"
-            >
-              Github <ArrowUpRight className="w-3 h-3" />
-            </Link>
-            <Link
-              className="text-sm flex gap-2 items-center text-zinc-700 dark:text-zinc-400 dark:hover:text-white"
-              href="https://better-auth.com/docs"
-            >
-              Docs <ArrowUpRight className="w-3 h-3" />
-            </Link>
-            <Link
-              className="text-sm flex gap-2 items-center text-zinc-700 dark:text-zinc-400 dark:hover:text-white"
-              href="https://www.better-auth.com/docs/examples"
-            >
-              Examples
-              <ArrowUpRight className="w-3 h-3" />
-            </Link>
+          <div className="flex items-center space-x-6 text-sm text-muted-foreground">
+            <span>Powered by Dodopayments</span>
           </div>
-          <div className="text-sm text-zinc-500 mt-4 md:mt-0">
-            Better Auth Starter
+          <div className="text-sm text-muted-foreground mt-4 md:mt-0">
+            © {new Date().getFullYear()} Skndan
           </div>
         </div>
       </footer>

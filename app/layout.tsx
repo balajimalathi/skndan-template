@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Better Auth Starter",
-  description: "Better Auth Starter",
+  title: "Skndan Cal | Modern Scheduling & Payments",
+  description: "Monetize your time effortlessly with Skndan Cal.",
 };
 
 export default function RootLayout({
