@@ -1,23 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin, createAuthMiddleware, organization as organizationPlugin } from "better-auth/plugins";
+import { admin, createAuthMiddleware } from "better-auth/plugins";
 import { db } from "../db/db";
 import { env } from "@/env";
-import DodoPayments from "dodopayments";
-import {
-  dodopayments,
-  checkout,
-  portal,
-  webhooks,
-  usage,
-} from "@dodopayments/better-auth";
-import { member, organization } from "@/lib/db/schema";
 
-export const dodoPayments = new DodoPayments({
-  bearerToken: env.DODO_PAYMENTS_API_KEY!,
-  environment: env.DODO_PAYMENTS_ENVIRONMENT!,
-});
 
 function buildSocialProviders() {
   const providers: Record<string, { clientId: string; clientSecret: string }> =
@@ -47,31 +34,6 @@ export const auth = betterAuth({
   plugins: [
     admin(),
     nextCookies(),
-    organizationPlugin(),
-    dodopayments({
-      client: dodoPayments,
-      createCustomerOnSignUp: true,
-      use: [
-        checkout({
-          products: [
-            {
-              productId: "pdt_xxxxxxxxxxxxxxxxxxxxx",
-              slug: "premium-plan",
-            },
-          ],
-          successUrl: "/dashboard/success",
-          authenticatedUsersOnly: true,
-        }),
-        portal(),
-        webhooks({
-          webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_SECRET!,
-          onPayload: async (payload) => {
-            console.log("Received webhook:", payload.type);
-          },
-        }),
-        usage(),
-      ],
-    }),
   ],
   databaseHooks: {
     session: {

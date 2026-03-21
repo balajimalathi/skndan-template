@@ -17,22 +17,6 @@ export const env = createEnv({
     // Google OAuth (required for sign-in)
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
-
-    // DodoPayments
-    DODO_PAYMENTS_API_KEY: z.string().min(1).optional(),
-    DODO_PAYMENTS_WEBHOOK_SECRET: z.string().min(1).optional(),
-    DODO_PAYMENTS_BASE_URL: z.string().url().optional(),
-    DODO_PAYMENTS_ENVIRONMENT: z.enum(["test_mode", "live_mode"]).optional(),
-
-    // Email — Resend (optional)
-    RESEND_API_KEY: z.string().min(1).optional(),
-    MAIL_FROM: z.string().email().optional(),
-
-    // Storage — Cloudflare R2 (optional)
-    R2_ACCESS_KEY_ID: z.string().min(1).optional(),
-    R2_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-    R2_BUCKET: z.string().min(1).optional(),
-    R2_ENDPOINT: z.string().url().optional(),
   },
   client: {
     NEXT_PUBLIC_URL: z.string().url(),
@@ -45,16 +29,6 @@ export const env = createEnv({
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    DODO_PAYMENTS_API_KEY: process.env.DODO_PAYMENTS_API_KEY,
-    DODO_PAYMENTS_WEBHOOK_SECRET: process.env.DODO_PAYMENTS_WEBHOOK_SECRET,
-    DODO_PAYMENTS_BASE_URL: process.env.DODO_PAYMENTS_BASE_URL,
-    DODO_PAYMENTS_ENVIRONMENT: process.env.DODO_PAYMENTS_ENVIRONMENT,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
-    MAIL_FROM: process.env.MAIL_FROM,
-    R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
-    R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
-    R2_BUCKET: process.env.R2_BUCKET,
-    R2_ENDPOINT: process.env.R2_ENDPOINT,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });

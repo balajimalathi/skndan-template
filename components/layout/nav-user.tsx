@@ -51,7 +51,7 @@ export function NavUser({ user }: { user: Partial<User> }) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">{user?.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
+                <span className="truncate text-xs text-sidebar-foreground/70">
                   {user?.email}
                 </span>
               </div>
@@ -87,7 +87,7 @@ export function NavUser({ user }: { user: Partial<User> }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={
-                () => router.push("/dashboard/account")
+                () => router.push("/dash/account")
               }>
                 <UserCircle />
                 Account

@@ -1,61 +1,61 @@
-"use client";
+'use client'
 
-import * as React from "react";
-
-import { NavMain } from "@/components/layout/nav-main";
-import { NavUser } from "@/components/layout/nav-user";
+import type { ComponentProps } from 'react'
+import { useLayout } from '@/context/layout-provider'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarSeparator,
-} from "@/components/ui/sidebar";
-import { User } from "@/lib/db/db";
-import { NavProjects } from "@/components/layout/nav-projects";
-import {
-  sidebarNavMain,
-  sidebarNavSchedule,
-  sidebarNavStaff,
-  sidebarProjects,
-} from "@/config/navigation";
+} from '@/components/ui/sidebar'
+import type { User } from '@/lib/db/db'
+import { sidebarData } from '@/components/layout/data/sidebar-data'
+import { NavGroup } from './nav-group'
+import { NavUser } from './nav-user'
+import { TeamSwitcher } from './team-switcher'
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: Partial<User>;
+export type AppSidebarProps = ComponentProps<typeof Sidebar> & {
+  /** When set (e.g. from server session), overrides static sidebar user in the footer */
+  user?: Partial<User>
 }
 
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
-  if (!user) {
-    throw new Error("AppSidebar requires a user but received undefined.");
-  }
+export function AppSidebar({
+  user,
+  collapsible: collapsibleProp,
+  variant: variantProp,
+  className,
+  ...rest
+}: AppSidebarProps) {
+  const { collapsible: layoutCollapsible, variant: layoutVariant } = useLayout()
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar
+      collapsible={collapsibleProp ?? layoutCollapsible}
+      variant={variantProp ?? layoutVariant}
+      className={className}
+      {...rest}
+    >
       <SidebarHeader>
-        {/* <TeamSwitcher teams={data.teams} /> */}
+        <TeamSwitcher teams={sidebarData.teams} />
+        {/* Swap TeamSwitcher for <AppTitle /> if you prefer a static title (shadcn-admin pattern). */}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain
-          items={user?.role === "staff" ? sidebarNavStaff : sidebarNavMain}
-          groupLabel={user?.role === "staff" ? "Staff" : "Main"}
-        />
-        {user?.role !== "staff" && (
-          <>
-            <SidebarSeparator />
-            <NavMain
-              items={sidebarNavSchedule}
-              groupLabel="Schedule"
-            />
-          </>
-        )}
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
-        {/* <NavProjects projects={sidebarProjects} /> */}
+        {sidebarData.navGroups.map((group) => (
+          <NavGroup key={group.title} {...group} />
+        ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser
+          user={
+            user ?? {
+              name: sidebarData.user.name,
+              email: sidebarData.user.email,
+              image: sidebarData.user.avatar,
+            }
+          }
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  );
+  )
 }
-

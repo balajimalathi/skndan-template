@@ -4,9 +4,8 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { Shield, ArrowRight, Layout, ArrowUpRight, LogOut, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import LogoutButton from "@/components/auth/logout-button-icon";
-import HeroSection from "@/components/landing/hero";
 export default async function page() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -24,16 +23,6 @@ export default async function page() {
               <ModeToggle />
               {session?.user ? (
                 <div className="flex gap-2 items-center">
-                  <a href="/dashboard">
-                    <Button
-                      className="rounded-full flex items-center gap-2"
-                      variant="outline"
-                      size="default"
-                    >
-                      <Layout className="w-4 h-4" />
-                      Dashboard
-                    </Button>
-                  </a>
                   <LogoutButton />
                 </div>
               ) : (
@@ -52,7 +41,42 @@ export default async function page() {
           </nav>
         </div>
       </header>
-      <HeroSection />
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="max-w-2xl">
+          {session?.user ? (
+            <>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Authenticated
+              </h1>
+              <p className="mt-2 text-muted-foreground">
+                You can manage your sessions and API keys via the API routes:
+              </p>
+              <div className="mt-4 space-y-2 text-sm">
+                <div>
+                  `GET /api/sessions` and `DELETE /api/sessions/:id`
+                </div>
+                <div>
+                  `POST /api/sessions/revoke-all`
+                </div>
+                <div>
+                  `GET /api/api-keys` and `POST /api/api-keys` and{" "}
+                  `DELETE /api/api-keys/:id`
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Sign in to use sessions and API keys
+              </h1>
+              <p className="mt-2 text-muted-foreground">
+                This template is pruned to Better Auth + session management +
+                API-key access.
+              </p>
+            </>
+          )}
+        </div>
+      </main>
       <footer className="w-full z-10 border-t border-border py-6 bg-background">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center mb-4 md:mb-0 text-muted-foreground">
@@ -60,7 +84,7 @@ export default async function page() {
             <span className="text-sm font-medium">Skndan Cal</span>
           </div>
           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-            <span>Powered by Dodopayments</span>
+            <span>Powered by Better Auth</span>
           </div>
           <div className="text-sm text-muted-foreground mt-4 md:mt-0">
             © {new Date().getFullYear()} Skndan

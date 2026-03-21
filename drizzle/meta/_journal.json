@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1773680198880,
-      "tag": "0000_oval_glorian",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1773680488367,
-      "tag": "0001_parched_wildside",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1773680587781,
-      "tag": "0002_redundant_thunderbolts",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1773742503383,
-      "tag": "0003_dashing_purple_man",
+      "when": 1774022975645,
+      "tag": "0000_pale_red_shift",
       "breakpoints": true
     }
   ]
