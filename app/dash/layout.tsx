@@ -1,7 +1,6 @@
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { Header } from '@/components/layout/site-header'
 import { Main } from '@/components/layout/main'
-import { SkipToMain } from '@/components/layout/skip-to-main'
 import { ModeToggle } from '@/components/ui/mode-toggle'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
@@ -40,8 +39,7 @@ export default async function layout({
         <SidebarInset
           className={cn(
             '@container/content',
-            'has-data-[layout=fixed]:h-svh',
-            'peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]'
+            'has-data-[layout=fixed]:h-svh'
           )}
         >
           <Header fixed>
