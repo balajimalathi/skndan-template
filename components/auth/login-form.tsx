@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/auth-client";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Terminal } from "lucide-react";
-import { IconLoader } from "@tabler/icons-react";
+import { Loader, Terminal } from "lucide-react";
 import { toast } from "sonner";
 
 export function LoginForm({
@@ -27,7 +26,7 @@ export function LoginForm({
     setError("");
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard",
+      callbackURL: "/dash",
       fetchOptions: {
         onRequest: () => {
           setLoading(true);
@@ -69,7 +68,7 @@ export function LoginForm({
             disabled={loading}
           >
             {loading ? (
-              <IconLoader className="h-5 w-5 animate-spin" stroke={2} />
+              <Loader className="h-5 w-5 animate-spin" size={16} />
             ) : (
               <svg
                 className="h-5 w-5"

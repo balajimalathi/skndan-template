@@ -3,6 +3,5 @@ export {
   session,
   account,
   verification,
-  subscription,
   apiKey,
 } from "./tables";

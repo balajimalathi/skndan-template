@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
-import { Geist, Geist_Mono, Onest } from "next/font/google";
+import { Gabarito, Geist, Geist_Mono, Onest } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
-const geistSans = Onest({
+const geistSans = Gabarito({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Better Auth Starter",
-  description: "Better Auth Starter",
+  title: "Skndan Cal | Modern Scheduling & Payments",
+  description: "Monetize your time effortlessly with Skndan Cal.",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -34,7 +34,6 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
         >
           {children}
           <Toaster />

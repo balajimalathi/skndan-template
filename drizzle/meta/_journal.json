@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1744499552760,
-      "tag": "0000_boring_blackheart",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1770653429251,
-      "tag": "0001_nebulous_cobalt_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1770656469425,
-      "tag": "0002_serious_whiplash",
+      "when": 1774022975645,
+      "tag": "0000_pale_red_shift",
       "breakpoints": true
     }
   ]

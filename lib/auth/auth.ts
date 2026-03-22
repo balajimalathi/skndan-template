@@ -1,9 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin, createAuthMiddleware, organization } from "better-auth/plugins";
+import { admin, createAuthMiddleware } from "better-auth/plugins";
 import { db } from "../db/db";
 import { env } from "@/env";
+
 
 function buildSocialProviders() {
   const providers: Record<string, { clientId: string; clientSecret: string }> =
@@ -27,10 +28,13 @@ export const auth = betterAuth({
     enabled: false,
   },
   hooks: {
-    before: createAuthMiddleware(async (ctx) => {}),
+    before: createAuthMiddleware(async (ctx) => { }),
   },
   account: {},
-  plugins: [admin(), nextCookies(), organization({})],
+  plugins: [
+    admin(),
+    nextCookies(),
+  ],
   databaseHooks: {
     session: {
       create: {
